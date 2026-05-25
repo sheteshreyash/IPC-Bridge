@@ -17,7 +17,7 @@ Generate dummy telemetry data on the STM32 and print it through UART to the lapt
 
 ## Format
 
-SEQ=<n>,UPTIME_MS=<n>,AX=<value>mg,AY=<value>mg,AZ=<value>mg,GX=<value>mdps,GY=<value>mdps,GZ=<value>mdps
+SEQ=&lt;n&gt;,UPTIME_MS=&lt;n&gt;,AX=&lt;value&gt;mg,AY=&lt;value&gt;mg,AZ=&lt;value&gt;mg,GX=&lt;value&gt;mdps,GY=&lt;value&gt;mdps,GZ=&lt;value&gt;mdps
 
 ## Implementation idea
 
