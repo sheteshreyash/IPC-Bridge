@@ -1,0 +1,12 @@
+flowchart TD
+    A[Power ON Board] --> B[Boot STM32 Firmware]
+    B --> C[Initialize Clock]
+    C --> D[Initialize GPIO]
+    D --> E[Initialize UART]
+    E --> F[Enter Main Loop]
+    F --> G[Generate Dummy Telemetry]
+    G --> H[Format Text Packet]
+    H --> I[Transmit over UART]
+    I --> J[Open Serial Terminal on Laptop]
+    J --> K[Read Telemetry]
+    K --> L[Display / Log Output]

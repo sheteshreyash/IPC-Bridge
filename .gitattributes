@@ -1,0 +1,28 @@
+# Normalize text files
+* text=auto eol=lf
+
+# Source files
+*.c text eol=lf
+*.h text eol=lf
+*.cpp text eol=lf
+*.hpp text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.cmake text eol=lf
+
+# Binary / generated
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.bin binary
+*.hex binary
+*.elf binary
+*.o binary
+*.ko binary

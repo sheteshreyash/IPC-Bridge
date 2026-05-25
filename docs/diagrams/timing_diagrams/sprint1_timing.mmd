@@ -1,0 +1,13 @@
+gantt
+    title Sprint 1 UART Telemetry Timing
+    dateFormat  HH:mm:ss
+    axisFormat  %H:%M:%S
+
+    section STM32
+    Boot and Init           :a1, 00:00:00, 5s
+    Telemetry Generation    :a2, after a1, 10s
+    UART Transmission       :a3, after a2, 10s
+
+    section Laptop
+    Open Terminal           :b1, 00:00:00, 5s
+    Receive and Display     :b2, after b1, 20s

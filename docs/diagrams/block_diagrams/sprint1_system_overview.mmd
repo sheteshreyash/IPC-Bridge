@@ -1,0 +1,13 @@
+flowchart LR
+    A[Your Laptop<br/>Windows + Ubuntu Dual Boot] -->|USB| B[STM32 Nucleo H753ZI]
+    B -->|UART / VCP| C[Serial Terminal on Laptop]
+
+    subgraph STM32[STM32 Firmware]
+        D[main.c]
+        E[GPIO Init]
+        F[UART Init]
+        G[Telemetry Generator]
+        H[HAL_UART_Transmit]
+    end
+
+    B --> D

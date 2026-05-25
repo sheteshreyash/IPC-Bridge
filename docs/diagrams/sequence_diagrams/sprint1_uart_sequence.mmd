@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant U as User
+    participant L as Laptop Serial Terminal
+    participant B as STM32 Nucleo H753ZI
+
+    U->>L: Open serial terminal at 115200 baud
+    B->>B: Initialize clock, GPIO, UART
+    loop Every N milliseconds
+        B->>B: Create dummy telemetry values
+        B->>L: Send formatted telemetry string over UART
+        L->>U: Show live text output
+    end
