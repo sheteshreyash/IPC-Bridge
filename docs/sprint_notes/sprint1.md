@@ -1,72 +1,57 @@
-# Sprint 1 — Dummy UART Telemetry from STM32
+# Sprint 1 Notes — Dummy Telemetry over UART
 
-## Goal
+## Sprint goal
 
-Create a simple STM32 firmware that generates dummy telemetry data and sends it to a laptop serial terminal over UART.
+Get the STM32 Nucleo board to generate dummy telemetry and display it on a laptop serial terminal.
 
 ## Scope
 
 Included:
 
-- STM32CubeIDE project setup
-- UART initialization
-- Dummy telemetry generation
-- UART transmission
-- Serial terminal validation
-- Documentation and diagrams
+- STM32CubeIDE setup
+- USART configuration
+- telemetry generator code
+- UART output
+- serial terminal validation
+- documentation and diagrams
 
 Not included:
 
 - FreeRTOS
 - DMA
-- External sensor integration
+- sensor board
 - Raspberry Pi
 - Linux kernel driver
-- Visualization pipeline
+- live visualization
 
-## Why this sprint exists
+## Hardware used
 
-This sprint proves that:
+- STM32 NUCLEO-H743ZI
+- USB cable
+- Laptop with Windows 11 and Ubuntu 22.04
+- Serial terminal software
 
-- the board is working
-- flashing is working
-- UART output is working
-- the repository structure is correct
-- documentation workflow is in place
+## Validation method
 
-## Expected Output
+- Flash the board
+- Open serial terminal
+- Verify formatted telemetry lines
+- Confirm sequence count increments
+- Confirm output is stable
 
-A repeating telemetry line such as:
+## Success criteria
 
-AX:123 AY:456 AZ:789 CNT:42
-
-or a more structured format such as:
-
-SEQ=42,TIME=123456,AX=123,AY=456,AZ=789
-
-## STM32 Configuration
-
-- Board: NUCLEO-H753ZI
-- Tool: STM32CubeIDE
-- UART: USART3 / VCP
-- Baud rate: 115200
-- Parity: None
-- Stop bits: 1
-- Word length: 8 bits
-
-## Validation Method
-
-- Flash firmware
-- Open serial terminal on Ubuntu or Windows
-- Observe repeating dummy telemetry
-- Confirm stable transmission
+- UART output visible
+- no build errors
+- no runtime crash
+- readable telemetry on terminal
+- repository documentation updated
 
 ## Deliverables
 
-- Working CubeIDE project
-- Source code
-- Screenshot of serial output
-- Block diagram
-- Sequence diagram
-- Timing diagram
-- Updated README
+- telemetry.h
+- telemetry.c
+- updated main.c
+- diagrams
+- testing notes
+- README update

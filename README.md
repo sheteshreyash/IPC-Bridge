@@ -1,47 +1,47 @@
-# STM32 IPC Pipeline
+# IPC Bridge Project
 
-A real-time embedded systems project built around:
+A modular embedded systems project that starts with dummy telemetry on an STM32 Nucleo board and evolves into a full embedded-to-Linux IPC pipeline.
 
-- STM32H753ZI Nucleo board
-- UART telemetry in Sprint 1
-- FreeRTOS in Sprint 2
-- Linux kernel IPC in later sprints
-- Raspberry Pi integration later
-- Live visualization and benchmarking later
+## Current sprint
 
-## Project goal
+Sprint 1 — Dummy telemetry over UART
 
-Build a modular embedded-to-Linux pipeline that starts with dummy telemetry and evolves into a full real-time sensor IPC system.
+## Hardware
 
-## Current stage
+- STM32 NUCLEO-H743ZI
+- Laptop with Windows 11 + Ubuntu 22.04 dual boot
 
-Sprint 1 — Dummy UART telemetry
+## Current status
+
+- UART telemetry generation working
+- Serial terminal validation in progress
+- Documentation and architecture notes being added
 
 ## Sprint roadmap
 
 - Sprint 1: Dummy telemetry over UART
-- Sprint 2: FreeRTOS scheduling on dummy telemetry
-- Sprint 3: Linux IPC bridge for dummy data
+- Sprint 2: FreeRTOS on dummy telemetry
+- Sprint 3: Linux IPC bridge for dummy telemetry
 - Sprint 4: Real sensor bring-up
 - Sprint 5: FreeRTOS on real sensor data
-- Sprint 6: Linux IPC + visualization on real sensor data
+- Sprint 6: Linux IPC bridge and visualization on real sensor data
 
 ## Repository structure
 
-- `firmware/` — STM32 code
-- `kernel/` — Raspberry Pi Linux driver code
-- `user/` — user-space daemon and tools
-- `docs/` — architecture, setup, testing, sprint notes
-- `tools/` — plotting and utility scripts
-- `hardware/` — wiring, BOM, datasheets
-- `benchmarks/` — measured outputs and reports
-- `scripts/` — build, flash, and run scripts
+- docs/ — architecture, setup, testing, sprint notes
+- firmware/ — STM32 code
+- kernel/ — Raspberry Pi kernel work
+- user/ — user-space tools and daemons
+- tools/ — helper scripts
+- hardware/ — wiring and BOM notes
+- benchmarks/ — measured outputs
+- scripts/ — helper scripts
 
 ## Development approach
 
-Build the project in small verified stages.
-Do not move to the next sprint until the current one is stable.
+Build one sprint at a time.
+Do not move forward until the current sprint is stable and documented.
 
 ## License
 
-MIT License
+MIT
