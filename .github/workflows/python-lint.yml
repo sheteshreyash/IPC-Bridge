@@ -1,0 +1,36 @@
+name: Python Linting
+
+# 1. The trigger block
+on:
+  push:
+    branches: [ "main", "feature/*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Linting Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+
+      - name: Lint with Flake8 (Syntax Errors)
+        run: |
+          # Stop the build if there are critical Python syntax errors
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Lint with Flake8 (Formatting Warnings)
+        run: |
+          # exit-zero treats formatting issues as warnings, keeping the pipeline green
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics

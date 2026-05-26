@@ -1,0 +1,31 @@
+name: STM32 Firmware Build
+
+# 1. The missing trigger block: Tells GitHub exactly WHEN to run this file
+on:
+  push:
+    branches: [ "main", "feature/*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install ARM GCC Toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
+
+      - name: Verify Toolchain Installation
+        run: |
+          arm-none-eabi-gcc --version
+          echo "ARM GCC Toolchain successfully installed!"
+
+      - name: Firmware Build Step
+        run: |
+          echo "Toolchain is ready."
+          echo "Note: CubeIDE makefiles are ignored in Git. Pipeline is green and ready for headless build configuration in Sprint 3."
