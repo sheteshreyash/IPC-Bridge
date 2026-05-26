@@ -2,7 +2,7 @@
 
 ## Objective
 
-Verify that STM32 firmware is generating and transmitting dummy telemetry correctly.
+Verifying STM32 firmware is generating and transmitting dummy telemetry correctly.
 
 ## Test setup
 

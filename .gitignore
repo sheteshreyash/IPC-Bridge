@@ -1,6 +1,4 @@
-# =========================
 # STM32CubeIDE / Eclipse
-# =========================
 *.launch
 *.tmp
 .metadata/
@@ -24,9 +22,7 @@ build/
 *.ioc~
 *.mxproject
 
-# =========================
 # Linux kernel module builds
-# =========================
 *.ko
 *.mod
 *.mod.c
@@ -35,9 +31,7 @@ Module.symvers
 modules.order
 *.cmd
 
-# =========================
 # C/C++ / general build output
-# =========================
 cmake-build-*/
 out/
 bin/
@@ -46,9 +40,7 @@ target/
 dist/
 install/
 
-# =========================
 # Python
-# =========================
 __pycache__/
 *.pyc
 *.pyo
@@ -57,42 +49,29 @@ __pycache__/
 venv/
 .env/
 
-# =========================
 # Logs and benchmark output
-# =========================
 logs/
 *.log
 *.csv
 *.dat
 *.raw
 
-# Keep benchmark reports and docs, but ignore generated raw run logs if you want
-# Uncomment if you want to ignore all CSVs globally:
-# benchmarks/raw_logs/*.csv
-
-# =========================
 # Editors / IDEs
-# =========================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# =========================
 # OS files
-# =========================
 .DS_Store
 Thumbs.db
 
-# =========================
 # Raspberry Pi / deployment artifacts
-# =========================
 *.img
 *.backup
 
-# =========================
+
 # Sensitive files
-# =========================
 *.pem
 *.key

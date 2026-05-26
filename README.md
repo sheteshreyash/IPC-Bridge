@@ -40,7 +40,7 @@ Sprint 1 — Dummy telemetry over UART
 ## Development approach
 
 Build one sprint at a time.
-Do not move forward until the current sprint is stable and documented.
+Each sprint adds a small piece of functionality and validates it before moving on.
 
 ## License
 
