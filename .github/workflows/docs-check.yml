@@ -15,3 +15,5 @@ jobs:
         run: |
           test -d docs
           test -f README.md
+          test -f docs/sprint_notes/sprint1.md
+          test -f docs/sprint_notes/sprint2.md

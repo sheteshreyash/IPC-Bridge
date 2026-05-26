@@ -1,0 +1,15 @@
+flowchart LR
+    L[Developer Laptop<br/>Windows 11 + Ubuntu 22.04] -->|USB| S[STM32 NUCLEO-H753ZI]
+
+    subgraph STM32_FW[STM32 Firmware]
+        A[FreeRTOS Kernel]
+        B[Telemetry Task]
+        C[Scheduler / Tick]
+        D[UART Driver]
+    end
+
+    S --> A
+    A --> B
+    C --> B
+    B --> D
+    D -->|UART / VCP| T[Serial Terminal<br/>HTerm / Tera Term / PuTTY]
