@@ -1,0 +1,9 @@
+flowchart TD
+    A[Boot STM32] --> B[Initialize Clock + GPIO + UART]
+    B --> C[Start FreeRTOS Scheduler]
+    C --> D[Telemetry Task Runs]
+    D --> E[Generate Random / Dummy Telemetry]
+    E --> F[Format Telemetry String]
+    F --> G[Send over UART]
+    G --> H[Serial Terminal Displays Data]
+    H --> D

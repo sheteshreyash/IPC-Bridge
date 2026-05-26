@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant U as User
+    participant P as PC Serial Terminal
+    participant M as STM32 Nucleo
+    participant R as FreeRTOS Scheduler
+    participant T as Telemetry Task
+
+    U->>P: Open COM port at 115200
+    M->>R: Start scheduler
+    loop every tick / delay period
+        R->>T: Schedule telemetry task
+        T->>T: Generate random telemetry
+        T->>P: UART transmit data
+        P->>U: Display live output
+    end

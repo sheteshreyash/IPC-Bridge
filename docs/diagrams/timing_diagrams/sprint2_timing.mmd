@@ -1,0 +1,15 @@
+gantt
+    title FreeRTOS Task Scheduling (10ms Window)
+    dateFormat  s
+    axisFormat %L ms
+
+    section DataGenTask (High Priority)
+    Wake, Synthesize, Print (approx 4.5ms) :active, a1, 0, 4.5
+    Sleep (Yield to OS)                   :a2, 4.5, 10
+
+    section DiagTask (Low Priority)
+    Blink LED, Calc CPU Load (approx 0.5ms): b1, 4.5, 5
+    Sleep (Yield to OS)                   : b2, 5, 10
+
+    section Idle Task
+    Wait for next tick                    : c1, 5, 10

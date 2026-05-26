@@ -13,9 +13,8 @@ Sprint 1 — Dummy telemetry over UART
 
 ## Current status
 
-- UART telemetry generation working
-- Serial terminal validation in progress
-- Documentation and architecture notes being added
+- Sprint 1 UART telemetry completed
+- Sprint 2 FreeRTOS scheduler integration in progress
 
 ## Sprint roadmap
 
