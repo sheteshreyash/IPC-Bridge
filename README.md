@@ -1,20 +1,22 @@
 # IPC Bridge Project
 
-A modular embedded systems project that starts with dummy telemetry on an STM32 Nucleo board and evolves into a full embedded-to-Linux IPC pipeline.
+A modular embedded systems project that evolves from dummy telemetry on an STM32 Nucleo board into a full embedded-to-Linux IPC pipeline.
 
 ## Current sprint
 
-Sprint 1 — Dummy telemetry over UART
+Sprint 3 — Linux IPC bridge for dummy telemetry
 
 ## Hardware
 
 - STM32 NUCLEO-H743ZI
+- Raspberry Pi 4
 - Laptop with Windows 11 + Ubuntu 22.04 dual boot
 
 ## Current status
 
 - Sprint 1 UART telemetry completed
-- Sprint 2 FreeRTOS scheduler integration in progress
+- Sprint 2 FreeRTOS scheduler integration completed
+- Sprint 3 Linux IPC bridge implementation starting
 
 ## Sprint roadmap
 
@@ -33,13 +35,13 @@ Sprint 1 — Dummy telemetry over UART
 - user/ — user-space tools and daemons
 - tools/ — helper scripts
 - hardware/ — wiring and BOM notes
-- benchmarks/ — measured outputs
+- benchmarks/ — measured outputs and reports
 - scripts/ — helper scripts
 
 ## Development approach
 
 Build one sprint at a time.
-Each sprint adds a small piece of functionality and validates it before moving on.
+Each sprint should be stable and documented before moving on to the next.
 
 ## License
 

@@ -1,37 +1,41 @@
-# Sprint 1 Timing Model
+# Sprint 3 Timing Model
 
 ## Purpose
 
-This document defines the timing behavior of dummy telemetry transmission in Sprint 1.
+This document defines the timing behavior of the dummy-data IPC bridge.
 
 ## Current timing
 
-- Telemetry generated periodically in the main loop
-- Each frame is sent using HAL_UART_Transmit
-- Delay used between frames: HAL_Delay(100) or HAL_Delay(250)
+- Telemetry generation is periodic under FreeRTOS
+- A fixed-rate telemetry task produces frames
+- DATA_READY is asserted when a packet is available
+- Raspberry Pi responds to the interrupt and fetches the frame
+- User-space reads the data from the kernel device
 
 ## Notes
 
-Sprint 1 does not require hard real-time timing.
-The purpose is only to validate:
+Sprint 3 is still not the final low-latency optimized version.
+The purpose is to prove that timing remains stable through:
 
-- stable UART output
-- clean formatting
-- predictable message flow
+- RTOS scheduling
+- hardware interrupt notification
+- SPI transfer
+- kernel buffering
+- user-space readout
 
 ## Expected behavior
 
-- one message every fixed interval
-- sequence counter increases monotonically
-- values change every frame
-- no terminal corruption
-- no missing line breaks
+- periodic packet generation
+- deterministic packet availability
+- predictable interrupt behavior
+- stable end-to-end flow
+- no lost packets in normal operation
 
 ## Why this matters later
 
-This timing baseline will later help compare:
+This timing baseline becomes the reference for:
 
-- FreeRTOS timing
-- DMA-based timing
 - real sensor timing
-- Linux bridge latency
+- DMA-based transfer tuning
+- kernel latency profiling
+- end-to-end latency measurement

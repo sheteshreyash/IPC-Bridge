@@ -1,30 +1,35 @@
-# Sprint 1 Data Flow
+# Sprint 3 Data Flow
 
 ## Data flow summary
 
-The STM32 generates dummy telemetry values in firmware, formats them as text, and sends them to the laptop over UART via the board's Virtual COM Port.
+In Sprint 3, the STM32 generates dummy telemetry under FreeRTOS, places it in a fixed packet format, and makes it available to the Raspberry Pi through an SPI-based IPC bridge with a GPIO data-ready interrupt.
 
 ## Flow steps
 
-1. STM32 boots
-2. Clock and UART are initialized
-3. Main loop generates dummy telemetry values
-4. Data is formatted into a readable string
-5. UART transmits the string
-6. USB ST-LINK converts the UART stream into a Virtual COM Port on the laptop
-7. Serial terminal displays the output
+1. STM32 boots and initializes clocks, GPIO, UART, SPI, DMA-related placeholders, and FreeRTOS
+2. Telemetry task generates dummy telemetry values
+3. Telemetry task formats values into a fixed payload
+4. STM32 stores packet in a transmit buffer
+5. STM32 asserts DATA_READY GPIO
+6. Raspberry Pi GPIO interrupt fires
+7. Linux kernel driver schedules bottom-half work
+8. Driver reads packet over SPI
+9. Driver validates packet and pushes it into kfifo
+10. User-space daemon reads from `/dev/stm32_imu`
+11. Daemon logs and optionally visualizes the data
 
 ## Data format example
 
-SEQ=12,UPTIME_MS=12,AX=-345mg,AY=111mg,AZ=1023mg,GX=...
+SEQ=12,TS_US=123456,AX=-345,AY=111,AZ=1023,GX=10,GY=11,GZ=-3
 
 ## Data characteristics
 
-- text-based
-- human readable
-- low complexity
-- easy to validate in Sprint 1
+- fixed-format
+- machine-readable
+- low latency
+- suitable for kernel/user-space handoff
+- still based on dummy data for now
 
-## Reason for text format
+## Why this flow matters
 
-Text format is ideal for first bring-up because it is easy to debug in a serial terminal without needing any parser.
+This sprint removes UART-only assumptions and proves the embedded-to-Linux bridge path using a real IPC architecture.

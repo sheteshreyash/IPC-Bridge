@@ -1,13 +1,13 @@
-# Sprint 1 Packet Format
+# Sprint 3 Packet Format
 
 ## Current packet type
 
-Text packet for UART console validation
+Fixed-size telemetry packet for IPC bridge validation
 
 ## Fields
 
 - SEQ
-- UPTIME_MS
+- TS_US
 - AX
 - AY
 - AZ
@@ -17,13 +17,14 @@ Text packet for UART console validation
 
 ## Example packet
 
-SEQ=0,UPTIME_MS=0,AX=-1000mg,AY=-1000mg,AZ=1000mg,GX=-2000mdps,GY=-2000mdps,GZ=-2000mdps
+SEQ=0,TS_US=0,AX=-1000,AY=-1000,AZ=1000,GX=-250,GY=-250,GZ=-250
 
 ## Notes
 
-- Sprint 1 packet is human-readable
-- Binary packets, CRC, and alignment will come later
-- This format is intentionally simple for bring-up and debugging
+- Sprint 3 moves from purely terminal-friendly text output to a structured IPC packet mindset
+- The packet is still based on dummy telemetry
+- The packet must be simple enough to validate through UART and later SPI
+- CRC can be introduced in later sprint refinement if needed
 
 ## Future evolution
 
@@ -31,5 +32,7 @@ Later sprints may convert this into:
 
 - fixed-size binary packet
 - CRC-protected payload
-- timestamped sensor frame
+- sequence gap detection
+- timestamp synchronization fields
 - Linux-readable IPC frame
+- sensor-specific metadata
