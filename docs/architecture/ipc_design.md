@@ -8,12 +8,12 @@ This document defines how the STM32 and Raspberry Pi communicate in Sprint 3.
 
 - Primary transport: SPI
 - Synchronization / notification: GPIO DATA_READY line
-- Debug fallback: UART on the STM32 side if needed
+- Debug fallback: UART on the STM32 side
 
 ## Roles
 
-- STM32: real-time producer
-- Raspberry Pi: Linux consumer
+- STM32: real-time producer, SPI slave
+- Raspberry Pi: Linux consumer, SPI master
 - Kernel driver: bridge between hardware transport and user space
 - User-space daemon: logger / analyzer / visualization input
 
@@ -41,7 +41,7 @@ Pi interrupt occurs
     -> workqueue performs SPI read
     -> packet validated
     -> packet stored in kfifo
-    -> user-space reads /dev/stm32_imu
+    -> user-space reads `/dev/telem0`
 
 ## Kernel design
 
@@ -49,6 +49,10 @@ Pi interrupt occurs
 - bottom half: SPI read and buffer push
 - kfifo: kernel buffering
 - character device: user-space access point
+
+## Debug policy
+
+UART remains enabled for debug logs and bring-up verification even though it is not the primary IPC path.
 
 ## Future evolution
 

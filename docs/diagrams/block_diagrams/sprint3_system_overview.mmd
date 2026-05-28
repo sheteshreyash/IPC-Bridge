@@ -1,0 +1,21 @@
+graph TD
+    subgraph STM32_Nucleo ["STM32H7 Nucleo (RTOS Producer)"]
+        A[FreeRTOS Telemetry Task] -->|Formats Data| B[SPI TX Buffer]
+        A -->|Debug Output| UART[UART Debug Console]
+        B --> C[SPI Slave Peripheral]
+        A -->|Triggers| D[GPIO EXTI Out]
+    end
+
+    subgraph Hardware_Bus ["Physical Jumper Wires"]
+        C <==>|SPI MISO/MOSI/SCLK/CS| E
+        D -->|DATA_READY Signal| F
+    end
+
+    subgraph Raspberry_Pi ["Ubuntu Linux 22.04 (Kernel & User Space)"]
+        F[GPIO IRQ In] --> G{Linux Hard IRQ}
+        G -->|Schedules| H[Workqueue / Bottom Half]
+        H --> E[SPI Master Controller]
+        E --> I[(Kernel kfifo Buffer)]
+        I --> J[Char Device '/dev/telem0']
+        J --> K[User-space Logger]
+    end

@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant STM32 as STM32 FreeRTOS
+    participant EXTI as DATA_READY Pin
+    participant SPI as SPI Bus (MISO/CS/CLK)
+    participant PI_IRQ as Pi Hard IRQ
+    participant PI_WQ as Pi Workqueue (SPI Driver)
+
+    loop Every 10ms (100Hz)
+        STM32->>STM32: Format Frame (Keep UART active)
+        STM32->>SPI: Load SPI TX Register
+        STM32->>EXTI: Drive HIGH
+        EXTI->>PI_IRQ: Rising Edge Detected
+        PI_IRQ->>PI_WQ: Schedule Bottom Half
+        PI_IRQ->>EXTI: Return (Fast Exit)
+
+        Note over PI_WQ, SPI: Workqueue executes asynchronously
+        PI_WQ->>SPI: Drive CS LOW (Start)
+        PI_WQ->>SPI: Generate Clock Pulses
+        SPI-->>PI_WQ: Shift out Telemetry Frame
+        PI_WQ->>SPI: Drive CS HIGH (End)
+
+        PI_WQ->>EXTI: Acknowledge (STM32 drives LOW)
+    end

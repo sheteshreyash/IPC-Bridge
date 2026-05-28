@@ -1,0 +1,18 @@
+flowchart TD
+    A([STM32: 10ms Timer Tick]) --> B[Generate Dummy Telemetry]
+    B --> C[Format into TelemetryFrame_t]
+    C --> D[Print to UART Debug]
+    C --> E[Load into SPI TX Buffer]
+    E --> F[Toggle DATA_READY Pin HIGH]
+    F --> G{Wait for Pi SPI Clock}
+
+    H([Pi: Detects Rising Edge IRQ]) --> I[Acknowledge Hardware IRQ]
+    I --> J[Schedule Kernel Workqueue]
+    J --> K[Pull SPI CS Low & Generate Clock]
+    K --> G
+
+    G --> L[SPI Shifts Data to Pi]
+    L --> M[Kernel Validates Frame]
+    M -- Valid --> N[Push to kfifo Buffer]
+    M -- Invalid --> O[Drop Frame & Log Error]
+    N --> P[User-space reads /dev/telem0]

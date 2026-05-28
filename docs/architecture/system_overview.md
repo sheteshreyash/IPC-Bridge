@@ -2,16 +2,17 @@
 
 ## Goal
 
-Sprint 3 turns the project into a real Linux IPC bridge using the STM32 as the real-time producer and the Raspberry Pi as the Linux consumer.
+Sprint 3 turns the project into a real heterogeneous IPC system using the STM32 as the deterministic data producer and the Raspberry Pi as the Linux-side consumer.
 
 ## Current scope
 
-- STM32 firmware still generates dummy telemetry
-- FreeRTOS continues to schedule the telemetry task
-- STM32 packages data into a fixed frame
-- STM32 signals the Raspberry Pi using a GPIO data-ready line
-- Raspberry Pi receives data through a Linux kernel driver
-- User-space daemon reads the data and prepares it for logging/visualization
+- STM32 FreeRTOS telemetry generation continues
+- STM32 formats dummy telemetry into a fixed packet
+- STM32 acts as SPI slave
+- Raspberry Pi acts as SPI master
+- DATA_READY GPIO notifies the Pi that a packet is ready
+- Pi kernel driver receives data and exposes it to user space
+- UART remains available on STM32 as a debug path
 
 ## Current hardware
 
@@ -20,15 +21,15 @@ Sprint 3 turns the project into a real Linux IPC bridge using the STM32 as the r
 - USB cable for STM32 flashing and debug
 - Jumper wires for SPI and GPIO interrupt connection
 - Laptop running Windows 11 + Ubuntu 22.04 dual boot
-- Serial terminal software for debug output
-- Linux tools for kernel module testing and data capture
+- Serial terminal software for STM32 debug output
+- Linux build tools for Pi kernel/user-space development
 
 ## High-level architecture
 
 STM32 FreeRTOS telemetry source
-    -> SPI + DATA_READY GPIO
+    -> SPI slave + DATA_READY GPIO
 Raspberry Pi Linux kernel driver
-    -> /dev/stm32_imu character device
+    -> /dev/telem0 character device
 User-space daemon
     -> CSV logging / latency reporting / visualization
 
@@ -37,20 +38,20 @@ User-space daemon
 This sprint validates:
 
 - STM32 to Raspberry Pi physical IPC
-- Linux kernel driver integration
 - interrupt-driven receive flow
-- kernel buffer usage
+- Linux kernel driver integration
+- kernel buffering
 - user-space data consumption
 - low-latency pipeline behavior
 
 ## Not included yet
 
 - real sensor board
-- DMA-based real sensor acquisition
-- final packet optimization
-- production-grade error recovery
-- advanced visualization polish
+- final DMA optimization
+- advanced packet recovery
+- full visualization polish
+- production-ready performance tuning
 
 ## Expected outcome
 
-A working dummy-data IPC bridge from STM32 to Raspberry Pi with measured data movement through the Linux stack.
+A working dummy-data IPC bridge from STM32 to Raspberry Pi with clear separation between producer, transport, kernel, and user space.

@@ -14,7 +14,7 @@ This document defines the timing behavior of the dummy-data IPC bridge.
 
 ## Notes
 
-Sprint 3 is still not the final low-latency optimized version.
+Sprint 3 is not the final low-latency optimized version.
 The purpose is to prove that timing remains stable through:
 
 - RTOS scheduling
