@@ -75,3 +75,19 @@ Thumbs.db
 # Sensitive files
 *.pem
 *.key
+
+# Linux kernel build outputs
+kernel/*.o
+kernel/*.ko
+kernel/*.mod
+kernel/*.mod.c
+kernel/*.symvers
+kernel/Module.symvers
+kernel/modules.order
+kernel/.*.cmd
+
+# CMake
+user/**/build/
+
+# Generic
+*.tmp
