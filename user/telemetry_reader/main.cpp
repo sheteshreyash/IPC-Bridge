@@ -6,6 +6,23 @@
 #include <cstring>
 #include <iostream>
 
+#include "../../shared/telem0_protocol.h"
+
+static void print_packet(const telem0_packet_t &pkt)
+{
+    std::printf(
+        "MAGIC=%08X,SEQ=%u,TS_US=%u,AX=%d,AY=%d,AZ=%d,GX=%d,GY=%d,GZ=%d\n",
+        pkt.magic,
+        pkt.seq,
+        pkt.ts_us,
+        pkt.ax,
+        pkt.ay,
+        pkt.az,
+        pkt.gx,
+        pkt.gy,
+        pkt.gz);
+}
+
 int main()
 {
     const char *dev = "/dev/telem0";
@@ -24,8 +41,6 @@ int main()
     pfd.events = POLLIN;
     pfd.revents = 0;
 
-    char buf[256];
-
     while (true)
     {
         int pret = poll(&pfd, 1, 1000);
@@ -36,31 +51,35 @@ int main()
         }
 
         if (pret == 0)
-        {
             continue;
-        }
 
         if (pfd.revents & POLLIN)
         {
-            ssize_t n = read(fd, buf, sizeof(buf) - 1);
+            telem0_packet_t pkt;
+            ssize_t n = read(fd, &pkt, sizeof(pkt));
+
             if (n < 0)
             {
                 if (errno == EAGAIN || errno == EWOULDBLOCK)
-                {
                     continue;
-                }
+
                 std::perror("read");
                 break;
             }
 
-            if (n == 0)
+            if (n == (ssize_t)sizeof(pkt) && pkt.magic == TELEM0_PACKET_MAGIC)
             {
-                continue;
+                print_packet(pkt);
             }
-
-            buf[n] = '\0';
-            std::cout << buf;
-            std::cout.flush();
+            else if (n > 0)
+            {
+                char buf[256];
+                size_t copy_n = (n < (ssize_t)(sizeof(buf) - 1)) ? (size_t)n : sizeof(buf) - 1;
+                memcpy(buf, &pkt, copy_n);
+                buf[copy_n] = '\0';
+                std::cout << buf;
+                std::cout.flush();
+            }
         }
     }
 
