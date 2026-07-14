@@ -1,34 +1,118 @@
-# Sprint 3 - System Latency & Determinism Measurement
+# Sprint 3 - Latency Measurement
+
+## Purpose
+
+Measure the deterministic behavior of the IPC bridge using dummy telemetry.
+
+---
 
 ## Objective
 
-Measure the end-to-end jitter and packet loss of the IPC Bridge.
+Measure
 
-## Prerequisites
+- packet period
+- interrupt latency
+- packet loss
+- jitter
 
-1. The `telem0_driver` is loaded.
-2. The `telemetry_reader` C++ application is compiled.
+between STM32 and Jetson Nano.
+
+---
 
 ## Test Procedure
 
-1. Stop the STM32 (hit the reset button and hold it).
-2. Start the `telemetry_reader` on the Pi and pipe the output to a file:
-   `./telemetry_reader > capture.csv`
-3. Release the STM32 reset button and let it run for exactly 60 seconds.
-4. Stop the reader application (`Ctrl+C`).
+1. Start telemetry reader
 
-## Analysis Metrics
+```bash
+./telemetry_reader > capture.csv
+```
 
-### 1. Packet Loss (Sequence Tracking)
+1. Allow the system to run for 60 seconds
 
-Open `capture.csv` and analyze the `SEQ=` column.
+1. Stop
 
-* Are there any missing numbers? (e.g., `SEQ=405` jumps to `SEQ=407`).
-* A missing sequence number indicates the Pi's Workqueue was too slow, and the STM32 overwrote the data before the Pi could read it.
+```bash
+CTRL+C
+```
 
-### 2. Jitter (Timestamp Delta)
+1. Metrics
 
-Analyze the `TS_US=` column.
+Packet Loss
 
-* The delta between each packet should be exactly `10000` (10ms).
-* Variations in this delta represent the Jitter introduced by the FreeRTOS scheduler or the Linux Kernel's interrupt latency.
+1. Verify
+
+```bash
+SEQ
+```
+
+---
+
+## increments without gaps
+
+Example
+
+401
+402
+403
+404
+
+---
+
+## No missing values
+
+- Timing
+Check
+
+```bash
+TS_US
+```
+
+difference.
+Expected
+
+10000 us
+
+for a
+
+100 Hz
+
+producer.
+
+Jitter
+
+Measure
+
+ΔTS_US
+
+---
+
+## Acceptable variation depends on
+
+- FreeRTOS scheduling
+- Linux scheduling
+- SPI latency
+
+---
+
+## Pass Criteria
+
+- No packet loss
+- Stable packet timing
+- Consistent interrupt response
+- No driver errors
+- Failure Cases
+- Missing sequence numbers
+- Variable timestamps
+- Buffer overflow
+- Driver timeout
+- Lost interrupts
+
+---
+
+## Future
+
+Sprint 6 extends this with
+
+- throughput benchmarking
+- histogram generation
+- latency plots

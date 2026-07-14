@@ -2,56 +2,103 @@
 
 ## Goal
 
-Sprint 3 turns the project into a real heterogeneous IPC system using the STM32 as the deterministic data producer and the Raspberry Pi as the Linux-side consumer.
+Sprint 3 transforms the project from a standalone embedded firmware application into a heterogeneous Embedded Linux IPC system.
 
-## Current scope
+The STM32H743ZI acts as a deterministic real-time telemetry producer, while the NVIDIA Jetson Nano acts as the Embedded Linux consumer.
 
-- STM32 FreeRTOS telemetry generation continues
-- STM32 formats dummy telemetry into a fixed packet
-- STM32 acts as SPI slave
-- Raspberry Pi acts as SPI master
-- DATA_READY GPIO notifies the Pi that a packet is ready
-- Pi kernel driver receives data and exposes it to user space
-- UART remains available on STM32 as a debug path
+Real IMU measurements are intentionally postponed until Sprint 5. Sprint 3 focuses entirely on validating the communication infrastructure using deterministic dummy telemetry.
 
-## Current hardware
+---
+
+## Current Scope
+
+STM32 Side
+
+- FreeRTOS scheduler
+- Producer module
+- Packet builder
+- SPI slave interface
+- DATA_READY GPIO signaling
+- UART debug output
+
+Jetson Nano Side
+
+- Linux SPI master
+- GPIO interrupt handling
+- Linux kernel driver
+- Workqueue processing
+- kfifo buffering
+- Character device (/dev/telem0)
+- User-space telemetry reader
+
+---
+
+## Current Hardware
 
 - STM32 NUCLEO-H743ZI
-- Raspberry Pi 4
-- USB cable for STM32 flashing and debug
-- Jumper wires for SPI and GPIO interrupt connection
-- Laptop running Windows 11 + Ubuntu 22.04 dual boot
-- Serial terminal software for STM32 debug output
-- Linux build tools for Pi kernel/user-space development
+- NVIDIA Jetson Nano P3450 (4GB)
+- MPU-9250 IMU module (reserved for Sprint 5)
+- USB Type-A to Micro-USB cable
+- Female-to-female jumper wires
+- Windows 11
+- Ubuntu 22.04 LTS
+- STM32CubeIDE
+- Visual Studio Code
+- Linux kernel build environment
 
-## High-level architecture
+---
 
-STM32 FreeRTOS telemetry source
-    -> SPI slave + DATA_READY GPIO
-Raspberry Pi Linux kernel driver
-    -> /dev/telem0 character device
-User-space daemon
-    -> CSV logging / latency reporting / visualization
+## High-Level Architecture
 
-## Why this sprint exists
+STM32H743ZI
+↓
+FreeRTOS
+↓
+Telemetry Producer
+↓
+Packet Builder
+↓
+SPI Slave + DATA_READY GPIO
+↓
+NVIDIA Jetson Nano
+↓
+Linux SPI Driver
+↓
+kfifo
+↓
+/dev/telem0
+↓
+User-space Telemetry Reader
 
-This sprint validates:
+---
 
-- STM32 to Raspberry Pi physical IPC
-- interrupt-driven receive flow
-- Linux kernel driver integration
-- kernel buffering
-- user-space data consumption
-- low-latency pipeline behavior
+## Sprint 3 Objectives
 
-## Not included yet
+Sprint 3 validates
 
-- real sensor board
-- final DMA optimization
-- advanced packet recovery
-- full visualization polish
-- production-ready performance tuning
+- Embedded-to-Linux IPC
+- SPI communication
+- GPIO interrupt synchronization
+- Linux kernel driver framework
+- Character device interface
+- User-space communication
+- Deterministic packet transport
 
-## Expected outcome
+---
 
-A working dummy-data IPC bridge from STM32 to Raspberry Pi with clear separation between producer, transport, kernel, and user space.
+## Not Included
+
+- MPU-9250 acquisition
+- Sensor fusion
+- DMA optimization
+- Performance benchmarking
+- Live visualization
+- Production latency optimization
+
+---
+
+## Expected Outcome
+
+A fully functional communication infrastructure capable of transferring deterministic telemetry packets from the STM32 to the Jetson Nano through an interrupt-driven Linux kernel architecture.
+
+Only after this infrastructure is validated will dummy telemetry be replaced with real MPU-9250 measurements.

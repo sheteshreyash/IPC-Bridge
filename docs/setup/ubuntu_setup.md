@@ -45,7 +45,13 @@ sudo apt install stlink-tools
 
 ```bash
     arm-none-eabi-gcc --version        # Proves you can still compile STM32 code
-    aarch64-linux-gnu-gcc --version    # Proves you can cross-compile for the Raspberry Pi
+    aarch64-linux-gnu-gcc --version    # Proves you can cross-compile for the Jetson Nano
+    cmake --version                     # Proves CMake is installed
+    gdb-multiarch --version             # Proves you can debug STM32 code
+    git --version                       # Proves Git is installed
+    make --version                      # Proves Make is installed
+    kmod --version                      # Proves you can manage kernel modules
+    modinfo --version                   # Proves you can inspect kernel modules 
     dtc --version                      # Proves the Device Tree Compiler is ready
     picocom --help | head -n 1         # Proves your serial sniffer is installed
     openocd --version                  # Proves OpenOCD is installed

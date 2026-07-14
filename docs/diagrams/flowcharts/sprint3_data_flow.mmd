@@ -1,18 +1,17 @@
 flowchart TD
     A([STM32: 10ms Timer Tick]) --> B[Generate Dummy Telemetry]
-    B --> C[Format into TelemetryFrame_t]
-    C --> D[Print to UART Debug]
-    C --> E[Load into SPI TX Buffer]
-    E --> F[Toggle DATA_READY Pin HIGH]
-    F --> G{Wait for Pi SPI Clock}
+    B --> C[Format into TelemetryPacket_t]
+    C --> D[Load into SPI TX Buffer]
+    D --> E[Toggle DATA_READY Pin 22 HIGH]
+    E --> F{Wait for Jetson SPI Clock}
 
-    H([Pi: Detects Rising Edge IRQ]) --> I[Acknowledge Hardware IRQ]
+    H([Jetson: Detects Rising Edge]) --> I[Acknowledge Hardware IRQ]
     I --> J[Schedule Kernel Workqueue]
     J --> K[Pull SPI CS Low & Generate Clock]
-    K --> G
+    K --> F
 
-    G --> L[SPI Shifts Data to Pi]
-    L --> M[Kernel Validates Frame]
+    F --> L[SPI Shifts Data to Jetson]
+    L --> M[Kernel Validates Magic Number]
     M -- Valid --> N[Push to kfifo Buffer]
     M -- Invalid --> O[Drop Frame & Log Error]
     N --> P[User-space reads /dev/telem0]

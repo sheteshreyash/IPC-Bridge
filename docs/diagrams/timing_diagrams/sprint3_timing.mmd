@@ -1,19 +1,14 @@
 sequenceDiagram
-    title SPI & EXTI Logic Level Timing
-    participant GPIO as DATA_READY (GPIO)
-    participant CS as SPI CS (Active Low)
-    participant MISO as SPI MISO (STM32 TX)
-    participant Pi as Raspberry Pi
-    Note over GPIO,Pi: Clock CLK = 10 ms
-    Note over GPIO,Pi: Initial State: DR=LOW, CS=HIGH, MISO=LOW
-    Note over GPIO,Pi: Time 0 ms: Pi waits for interrupts
-    Note over GPIO,Pi: <b>STM32 Alerts</b> when interrupt detected
-    Note over GPIO,Pi: 25 ms: Pi Kernel asserts CS
-    GPIO->>CS: CS=LOW - Active
-    Note over GPIO,Pi: 30 ms: Data shifting starts
-    CS->>GPIO: MISO data starts to shift out
-    Note over GPIO,Pi: 80 ms: Data shifting complete
-    CS->>GPIO: MISO data is fully shifted
-    Note over GPIO,Pi: 85 ms: Pi releases bus
-    CS->>GPIO: CS=HIGH - Inactive
-    Note over GPIO,Pi: 90 ms: STM32 clears alert
+    participant EXTI as Pin 22 (DATA_READY)
+    participant CS as Pin 24 (SPI1_CS0)
+    participant CLK as Pin 23 (SPI1_SCK)
+    participant MISO as Pin 21 (SPI1_MISO)
+
+    Note over EXTI,MISO: Idle State: EXTI=Low, CS=High, CLK=Low
+    EXTI->>EXTI: Drive HIGH (STM32 Signals Ready)
+    Note over CS: Jetson Hard IRQ -> Workqueue Delay
+    CS->>CS: Drive LOW (Jetson Asserts Control)
+    CLK->>CLK: 1 MHz Clock Pulses Generate
+    MISO->>MISO: 36 Bytes Shifted Out
+    CS->>CS: Drive HIGH (Jetson Releases Bus)
+    EXTI->>EXTI: Drive LOW (STM32 Clears Signal)

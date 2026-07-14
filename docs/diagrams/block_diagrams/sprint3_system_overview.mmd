@@ -1,21 +1,36 @@
 graph TD
-    subgraph STM32_Nucleo ["STM32H7 Nucleo (RTOS Producer)"]
-        A[FreeRTOS Telemetry Task] -->|Formats Data| B[SPI TX Buffer]
-        A -->|Debug Output| UART[UART Debug Console]
-        B --> C[SPI Slave Peripheral]
-        A -->|Triggers| D[GPIO EXTI Out]
+
+    subgraph STM32["STM32H743ZI (FreeRTOS Producer)"]
+
+        A[Telemetry Task<br/>100 Hz]
+        B[Producer Module]
+        C[Packet Builder]
+        D[SPI1 Slave Peripheral]
+        E[DATA_READY GPIO]
+
+        UART[UART Debug Console]
+        A --> B
+        B --> C
+        C --> D
+        C --> UART
+        C --> E
     end
 
-    subgraph Hardware_Bus ["Physical Jumper Wires"]
-        C <==>|SPI MISO/MOSI/SCLK/CS| E
-        D -->|DATA_READY Signal| F
+    subgraph BUS["Physical Connections"]
+
+        D <-->|SPI MOSI<br/>SPI MISO<br/>SPI SCLK<br/>SPI CS| SPIBUS
+        E -->|Interrupt| IRQBUS
     end
 
-    subgraph Raspberry_Pi ["Ubuntu Linux 22.04 (Kernel & User Space)"]
-        F[GPIO IRQ In] --> G{Linux Hard IRQ}
-        G -->|Schedules| H[Workqueue / Bottom Half]
-        H --> E[SPI Master Controller]
-        E --> I[(Kernel kfifo Buffer)]
-        I --> J[Char Device '/dev/telem0']
-        J --> K[User-space Logger]
+    subgraph JETSON["Jetson Nano P3450 (Embedded Linux)"]
+
+        IRQBUS --> G[GPIO Interrupt Controller]
+        G --> H[Linux Hard IRQ]
+        H --> I[Kernel Workqueue]
+        SPIBUS --> J[SPI Master Controller]
+
+        I --> J
+        J --> K[(Kernel kfifo)]
+        K --> L["/dev/telem0"]
+        L --> M[telemetry_reader]
     end

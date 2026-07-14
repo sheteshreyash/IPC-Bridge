@@ -1,0 +1,30 @@
+---
+id: 742ca770-0366-43d2-b9a0-2654d4c7aff3
+---
+graph LR
+
+subgraph STM32
+    A[FreeRTOS]
+    B[Producer]
+    C[Packet]
+    D[Transport]
+    E[SPI Slave]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+end
+
+subgraph Linux
+    F[GPIO IRQ]
+    G[Workqueue]
+    H[SPI Driver]
+    I[kfifo]
+    J[dev/telem0]
+    K[telemetry_reader]
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    J --> K
+end

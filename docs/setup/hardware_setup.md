@@ -2,57 +2,69 @@
 
 ## Purpose
 
-This document records the physical wiring between the STM32 NUCLEO-H743ZI and the Raspberry Pi 4 for the IPC bridge.
+This document defines the physical hardware connections between the STM32H743ZI and the NVIDIA Jetson Nano.
 
-## Design summary
+---
 
-- STM32 is the SPI slave
-- Raspberry Pi is the SPI master
-- STM32 DATA_READY GPIO notifies the Pi that a new packet is ready
-- UART remains available for STM32 debug output
+## Design Summary
 
-## Signals to document
+STM32
 
-- SPI SCLK
-- SPI MOSI
-- SPI MISO
-- SPI CS
+- SPI Slave
+- DATA_READY GPIO Producer
+- UART Debug
+
+Jetson Nano
+
+- SPI Master
+- GPIO Interrupt Consumer
+- Linux Kernel Driver
+
+---
+
+## Hardware
+
+- STM32 NUCLEO-H743ZI
+- NVIDIA Jetson Nano P3450 (4GB)
+- MPU-9250 (Sprint 5)
+- Jumper wires
+- USB cables
+
+---
+
+## Required Signals
+
+- SPI_SCK
+- SPI_MOSI
+- SPI_MISO
+- SPI_CS
 - DATA_READY
 - GND
 
-## Notes
+---
 
-Fill in exact STM32 pins only after the CubeMX pinout is finalized.
-Do not change pin assignments without updating this file and the wiring diagram.
+## Validation Checklist
 
-## Validation
+- Common Ground
+- 3.3V Logic
+- SPI Clock
+- Chip Select
+- GPIO Interrupt
+- UART Debug
 
-- continuity check
-- correct logic level
-- common ground verified
-- SPI clock verified
-- interrupt line verified
+---
 
-## Raspberry Pi 4 to STM32 NUCLEO-H743ZI Wiring Matrix
+## Wiring
 
-## Objective
+⚠ Final Jetson Nano GPIO numbering and header pin mapping will be documented after Jetson bring-up.
 
-Establish the physical SPI and Interrupt (EXTI) connections for the Sprint 3 IPC Bridge.
+Sprint 3 intentionally keeps the hardware abstraction independent from Jetson-specific pin numbers until the platform is configured.
 
-## The Wiring Table
+---
 
-**WARNING:** Both boards must be powered off before connecting jumper wires.
+## Important Notes
 
-| Signal Name | STM32 Nucleo-144 (SPI1) | Raspberry Pi 4 (SPI0) | Pi Physical Header |
-| :--- | :--- | :--- | :--- |
-| **GND** | Any `GND` pin | `Ground` | **Pin 20** |
-| **SPI_CS** | **PA4** (CN7 - A2) | `GPIO 8` (SPI0_CE0) | **Pin 24** |
-| **SPI_CLK** | **PA5** (CN7 - D13) | `GPIO 11` (SPI0_SCLK) | **Pin 23** |
-| **SPI_MISO** | **PA6** (CN7 - D12) | `GPIO 9` (SPI0_MISO) | **Pin 21** |
-| **SPI_MOSI** | **PA7** (CN7 - D11) | `GPIO 10` (SPI0_MOSI) | **Pin 19** |
-| **DATA_READY** | **PC7** (CN7 - Pin 19) | `GPIO 25` | **Pin 22** |
-
-## Critical Notes
-
-1. **Common Ground:** The `GND` wire is mandatory. Without it, the SPI signals will float, causing data corruption or complete transmission failure.
-2. **Logic Levels:** Both the STM32H7 and the Raspberry Pi operate at **3.3V logic**. Do not connect the STM32 to the Pi's 5V rail.
+- Never connect 5V logic.
+- Both STM32H7 and Jetson Nano operate at 3.3V.
+- Verify continuity before power-up.
+- Verify SPI mode (CPOL=0, CPHA=0).

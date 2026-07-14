@@ -1,72 +1,114 @@
-# Sprint 3 — Linux IPC Bridge for Dummy Telemetry
+# Sprint 3 — Embedded Linux IPC Infrastructure
 
 ## Goal
 
-Build the first real embedded-to-Linux IPC bridge using dummy telemetry from the STM32 and a Raspberry Pi kernel/user-space path.
+Develop the complete embedded-to-Linux communication infrastructure between the STM32H743ZI and the NVIDIA Jetson Nano using deterministic dummy telemetry.
 
-## Why this sprint exists
+---
 
-Sprint 3 moves the project from:
+## Motivation
 
-- UART-only validation
-to
-- a real IPC architecture
+Sprint 3 marks the transition from standalone embedded firmware into a heterogeneous embedded Linux system.
 
-This is the first sprint where the STM32 and Raspberry Pi communicate as two separate systems.
+Instead of validating only firmware functionality, this sprint validates the complete communication pipeline from firmware through the Linux kernel and into user space.
 
-## Current scope
+---
 
-Included:
+## Included Scope
 
-- STM32 FreeRTOS telemetry generation
-- dummy telemetry packet creation
-- DATA_READY GPIO notification
-- Raspberry Pi SPI receive path
-- Linux kernel driver
-- kfifo buffering
-- character device exposure
-- user-space reading and logging
-- architecture and timing documentation
+STM32
 
-Not included yet:
+- FreeRTOS scheduler
+- Producer module
+- Packet module
+- Transport module
+- SPI Slave
+- DATA_READY GPIO
 
-- real sensor board
-- final sensor calibration
-- DMA optimization for real sensor data
-- advanced loss recovery
-- final live plotting polish
+Linux
 
-## High-level architecture
+- Device Tree Overlay
+- SPI driver scaffold
+- GPIO interrupt framework
+- Workqueue
+- Character device
+- User-space reader
+- Shared protocol definitions
 
-STM32 FreeRTOS telemetry task
--> packet builder
--> DATA_READY GPIO
--> Raspberry Pi kernel driver
--> kfifo
--> /dev/telem0
--> user-space daemon
--> CSV / plots
+Documentation
 
-## What Sprint 3 validates
+- Architecture
+- Packet format
+- Data flow
+- IPC design
+- Testing
+- Setup guides
 
-- SPI transfer path between STM32 and Pi
-- interrupt-driven notification using GPIO
-- Linux kernel module skeleton
-- kernel to user-space bridge
-- packet flow consistency
-- first latency observations
+---
 
-## Expected outcome
+## Not Included
 
-A dummy-data IPC bridge that is visible from user space on the Raspberry Pi and can be logged or plotted.
+- MPU-9250 sensor acquisition
+- Sensor calibration
+- DMA optimization
+- Real-time visualization
+- Performance tuning
+- Packet compression
+- Advanced error recovery
 
-## Deliverables
+---
 
-- updated architecture docs
-- updated data flow docs
-- updated timing docs
-- IPC design docs
-- packet format docs
-- Sprint 3 release note
-- screenshots of validation
-- kernel and user-space code later in the sprint
+## High-Level Architecture
+
+STM32H743ZI
+↓
+FreeRTOS
+↓
+Producer
+↓
+Packet Builder
+↓
+Transport
+↓
+SPI Slave
+↓
+DATA_READY
+↓
+Jetson Nano
+↓
+Linux Kernel Driver
+↓
+kfifo
+↓
+/dev/telem0
+↓
+User-space Reader
+
+---
+
+## Sprint 3 Validation
+
+Firmware
+✔ Modular architecture
+✔ FreeRTOS integration
+✔ Dummy telemetry generation
+✔ SPI packet preparation
+
+Linux
+✔ Kernel module compilation
+✔ Device Tree Overlay
+✔ User-space application
+✔ Shared protocol
+
+Repository
+✔ Documentation
+✔ Build scripts
+✔ Project organization
+
+---
+
+## Expected Outcome
+
+At the end of Sprint 3, the complete software infrastructure will be ready.
+The only remaining dependency will be connecting the Jetson Nano hardware and validating live SPI communication.
+Once validated, the dummy telemetry generator will be replaced by MPU-9250 sensor data during Sprint 5.

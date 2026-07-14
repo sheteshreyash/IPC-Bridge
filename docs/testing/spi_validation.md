@@ -1,20 +1,101 @@
-# Sprint 3 - SPI Bus Hardware Validation
+# Sprint 3 - SPI Hardware Validation
+
+## Purpose
+
+Verify that the SPI link between the STM32H743ZI and NVIDIA Jetson Nano is functioning before testing the custom kernel driver.
+
+---
 
 ## Objective
 
-Prove the physical SPI bus is functioning using the standard Linux User-Space driver (`spidev`) before loading our custom kernel module.
+Validate
+
+- SPI clock
+- Chip Select
+- MOSI
+- MISO
+
+using the Linux spidev interface.
+
+---
+
+## Hardware
+
+Master
+
+- NVIDIA Jetson Nano
+
+Slave
+
+- STM32H743ZI
+
+---
 
 ## Prerequisites
 
-1. Both boards are powered and wired according to `raspberry_pi_wiring.md`.
-2. STM32 is flashed with the Sprint 3 firmware and is actively toggling `DATA_READY`.
-3. Raspberry Pi has SPI enabled via `sudo raspi-config`.
+- SPI enabled
+- Wiring verified
+- STM32 firmware running
+- DATA_READY active
 
-## Test Procedure
+---
 
-Because SPI is full-duplex, the Pi (Master) must send dummy clock pulses to force the STM32 (Slave) to shift out data.
+## Validation
 
-Run this command on the Raspberry Pi:
+Check available devices
 
 ```bash
-head -c 36 /dev/zero | spi-pipe -d /dev/spidev0.0 -s 1000000 | hexdump -C
+ls /dev/spidev*
+```
+
+Expected
+
+```bash
+/dev/spidev0.0
+```
+
+(or whichever bus Jetson exposes)
+
+---
+
+## Transfer dummy clocks
+
+```bash
+head -c 36 /dev/zero \
+| spi-pipe -d /dev/spidev0.0 -s 1000000 \
+| hexdump -C
+```
+
+Expected Result
+
+```bash
+Binary packet received from STM32.
+Packet length should match the protocol definition.
+```
+
+---
+
+## Pass Criteria
+
+- SPI device detected
+- Successful transfer
+- Correct packet length
+- No timeout
+- No CRC / magic failures
+
+---
+
+## Failure Cases
+
+- Wrong SPI mode
+- Wrong CS
+- Incorrect wiring
+- STM32 not responding
+- Driver configuration error
+
+---
+
+## Notes
+
+- This validation confirms only the physical SPI bus.
+- The custom kernel driver is tested separately.

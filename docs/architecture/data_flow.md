@@ -1,36 +1,61 @@
 # Sprint 3 Data Flow
 
-## Data flow summary
+## Data Flow Summary
 
-In Sprint 3, the STM32 generates dummy telemetry under FreeRTOS, places it into a packet, asserts a DATA_READY GPIO line, and the Raspberry Pi fetches the packet over SPI as the master.
+Sprint 3 establishes the complete embedded-to-Linux communication pipeline using deterministic dummy telemetry generated on the STM32H743ZI running FreeRTOS.
 
-## Flow steps
+Instead of real IMU measurements, mathematically generated telemetry packets are transferred over SPI to the NVIDIA Jetson Nano, validating the entire communication stack before integrating physical sensors in later sprints.
 
-1. STM32 boots and initializes clocks, GPIO, UART, SPI, and FreeRTOS
-2. Telemetry task generates dummy telemetry values
-3. Telemetry task formats values into a fixed packet
-4. STM32 stores packet in a transmit buffer
-5. STM32 asserts DATA_READY GPIO
-6. Raspberry Pi GPIO interrupt fires
-7. Linux kernel driver schedules bottom-half work
-8. Driver reads packet over SPI
-9. Driver validates packet and pushes it into kfifo
-10. User-space daemon reads from `/dev/telem0`
-11. Daemon logs and optionally visualizes the data
+---
 
-## Data format example
+## System Data Flow
 
-SEQ=12,TS_US=123456,AX=-345,AY=111,AZ=1023,GX=10,GY=11,GZ=-3
+1. STM32H743ZI boots.
+2. HAL initializes clocks, GPIO, UART, SPI and FreeRTOS.
+3. FreeRTOS starts the telemetry task.
+4. Producer module generates deterministic dummy telemetry.
+5. Packet module packs telemetry into a fixed binary packet.
+6. Transport module prepares the SPI transmit buffer.
+7. STM32 asserts the DATA_READY GPIO line.
+8. NVIDIA Jetson Nano detects the GPIO interrupt.
+9. Linux kernel driver schedules bottom-half work.
+10. Workqueue performs the SPI transaction.
+11. Received packet is validated.
+12. Packet is pushed into a kernel kfifo.
+13. User-space application reads from /dev/telem0.
+14. Packet is decoded, logged and prepared for visualization.
 
-## Data characteristics
+---
 
-- fixed-format
-- machine-readable
-- low latency
-- suitable for kernel/user-space handoff
-- still based on dummy data for now
+## Packet Example
 
-## Why this flow matters
+SEQ=12
+TS_US=123456
+AX=-345
+AY=111
+AZ=1023
+GX=10
+GY=11
+GZ=-3
 
-This sprint removes UART-only assumptions and proves the embedded-to-Linux bridge path using a real IPC architecture.
-It sets the stage for later sprints to replace dummy telemetry with real sensor data while keeping the same flow.
+---
+
+## Packet Characteristics
+
+- Fixed packet size
+- Binary protocol
+- Shared ABI between firmware and Linux
+- Sequence-numbered
+- Timestamped
+- Deterministic dummy telemetry
+- Machine readable
+- Low latency
+- Future compatible with MPU-9250 sensor data
+
+---
+
+## Sprint 3 Objective
+
+Sprint 3 validates the complete communication path without introducing sensor-side uncertainty.
+
+Only after the Linux SPI bridge is proven stable will the dummy telemetry generator be replaced by MPU-9250 measurements in Sprint 5.

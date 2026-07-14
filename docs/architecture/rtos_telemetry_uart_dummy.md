@@ -6,7 +6,7 @@ This document defines the RTOS-based telemetry generation path that feeds the IP
 
 ## Current role of telemetry task
 
-The telemetry task remains the producer of dummy telemetry data, but the output now feeds the SPI + GPIO IPC path toward the Raspberry Pi.
+The telemetry task remains the producer of dummy telemetry data, but the output now feeds the SPI + GPIO IPC path toward the Jetson Nano.
 
 ## Responsibilities
 

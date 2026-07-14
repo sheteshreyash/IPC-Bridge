@@ -2,58 +2,88 @@
 
 ## Purpose
 
-This document defines how the STM32 and Raspberry Pi communicate in Sprint 3.
+This document defines the communication architecture between the STM32H743ZI firmware and the NVIDIA Jetson Nano Linux system.
 
-## IPC medium
+Sprint 3 focuses on validating the communication infrastructure using deterministic dummy telemetry.
 
-- Primary transport: SPI
-- Synchronization / notification: GPIO DATA_READY line
-- Debug fallback: UART on the STM32 side
+---
 
-## Roles
+## IPC Medium
 
-- STM32: real-time producer, SPI slave
-- Raspberry Pi: Linux consumer, SPI master
-- Kernel driver: bridge between hardware transport and user space
-- User-space daemon: logger / analyzer / visualization input
+Primary transport
 
-## Why SPI is used
+- SPI
+Synchronization
 
-SPI is chosen because:
+- DATA_READY GPIO interrupt
+Debug Interface
 
-- it is fast
-- it is simple
-- it supports deterministic byte transfers
-- it is well-supported on Raspberry Pi
-- it matches the project goal of low-latency embedded IPC
+- UART (STM32 only)
 
-## Why GPIO is used
+---
 
-SPI slaves cannot initiate transfers by themselves.
-The STM32 therefore raises a DATA_READY GPIO line to notify the Pi that a new packet is ready.
+## System Roles
 
-## Flow
+STM32H743ZI
 
-STM32 packet ready
-    -> DATA_READY asserted
-Pi interrupt occurs
-    -> kernel top half runs
-    -> workqueue performs SPI read
-    -> packet validated
-    -> packet stored in kfifo
-    -> user-space reads `/dev/telem0`
+- Real-time telemetry producer
+- SPI Slave
+- FreeRTOS scheduler
+- Packet generator
 
-## Kernel design
+Jetson Nano
 
-- top half: minimal interrupt handling
-- bottom half: SPI read and buffer push
-- kfifo: kernel buffering
-- character device: user-space access point
+- SPI Master
+- Embedded Linux Host
 
-## Debug policy
+Linux Kernel Driver
 
-UART remains enabled for debug logs and bring-up verification even though it is not the primary IPC path.
+- Handles GPIO interrupts
+- Schedules workqueue
+- Reads SPI packets
+- Buffers packets using kfifo
+- Exposes /dev/telem0
 
-## Future evolution
+User-space Application
 
-Later sprints may replace dummy telemetry with real sensor data while keeping the IPC structure unchanged.
+- Reads packets
+- Decodes telemetry
+- Logs packets
+- Future visualization interface
+
+---
+
+## Why SPI?
+
+SPI was selected because it provides
+
+- deterministic transfers
+- full duplex communication
+- low software overhead
+- excellent Linux kernel support
+- high throughput
+- simple hardware implementation
+
+---
+
+## Why DATA_READY?
+
+An SPI slave cannot initiate communication.
+The STM32 therefore asserts DATA_READY whenever a complete telemetry packet is available.
+The Jetson Nano receives the GPIO interrupt and immediately schedules an SPI transaction.
+
+---
+
+## Future Expansion
+
+- Sprint 5
+Dummy telemetry
+↓
+MPU-9250 sensor measurements
+
+- Sprint 6
+User-space visualization
+↓
+Real-time plotting
+↓
+Performance optimization
