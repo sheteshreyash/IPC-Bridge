@@ -14,12 +14,12 @@ Embedded Linux IPC Infrastructure using Dummy Telemetry
 
 ## Hardware
 
-STM32 NUCLEO-H743ZI
-MPU-9250 (planned for Sprint 5)
-NVIDIA Jetson Nano P3450 4GB
-Windows 11
-Ubuntu 22.04 LTS
-STM32CubeIDE
+- STM32 NUCLEO-H743ZI
+- MPU-9250 (planned for Sprint 5)
+- NVIDIA Jetson Nano P3450 4GB
+- Windows 11
+- Ubuntu 22.04 LTS
+- STM32CubeIDE
 
 ---
 

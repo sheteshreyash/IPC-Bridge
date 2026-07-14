@@ -1,24 +1,32 @@
-# Sprint 3 Raspberry Pi Kernel Scaffold
+# Sprint 3 Linux Kernel Driver (Jetson Nano)
 
-This folder contains the first Linux-side scaffold for the IPC bridge.
+This directory contains the Linux kernel driver for the IPC Bridge project.
 
-## Current state
+## Current target hardware
 
-- SPI driver skeleton
-- `/dev/telem0` misc device
-- placeholder read path
-- device-tree overlay placeholder
+- NVIDIA Jetson Nano Developer Kit (P3450 4GB)
+- STM32 NUCLEO-H743ZI
+- SPI Master (Jetson)
+- SPI Slave (STM32)
 
-## Not implemented yet
+---
 
-- IRQ handling
-- SPI receive transaction
-- kfifo buffering
-- DMA
-- real Raspberry Pi hardware integration
+## Current Sprint
 
-## Build
+Sprint 3 — Dummy Telemetry IPC Bridge
 
-```bash
-make
-```
+### Implemented
+
+- SPI driver registration
+- misc character device (/dev/telem0)
+- IRQ skeleton
+- Workqueue
+- kfifo
+- userspace ABI
+- polling support
+
+### Pending
+
+- Jetson Device Tree
+- Jetson SPI bring-up
+- Real hardware validation
