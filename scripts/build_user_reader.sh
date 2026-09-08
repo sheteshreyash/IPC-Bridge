@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BUILD_DIR="${ROOT_DIR}/user/telemetry_reader/build"
+PROJECT_DIR="${ROOT_DIR}/user/telemetry_reader"
+BUILD_DIR="${PROJECT_DIR}/build"
 
-cmake -S "${ROOT_DIR}/user/telemetry_reader" -B "${BUILD_DIR}"
-cmake --build "${BUILD_DIR}" -j
+rm -rf "${BUILD_DIR}"
+mkdir -p "${BUILD_DIR}"
+
+cd "${BUILD_DIR}"
+
+cmake ..
+make -j4
