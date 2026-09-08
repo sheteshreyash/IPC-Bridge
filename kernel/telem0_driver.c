@@ -134,10 +134,10 @@ static ssize_t telem0_read(struct file *file,
     return sizeof(pkt);
 }
 
-static __poll_t telem0_poll(struct file *file, poll_table *wait)
+static unsigned int telem0_poll(struct file *file, poll_table *wait)
 {
     struct telem0_dev *dev = file->private_data;
-    __poll_t mask = 0;
+    unsigned int mask = 0;
 
     poll_wait(file, &dev->readq, wait);
 
@@ -232,7 +232,7 @@ err_misc:
     return ret;
 }
 
-static void telem0_remove(struct spi_device *spi)
+static int telem0_remove(struct spi_device *spi)
 {
     struct telem0_dev *dev = spi_get_drvdata(spi);
 
@@ -241,6 +241,7 @@ static void telem0_remove(struct spi_device *spi)
     kfifo_free(&dev->fifo);
 
     dev_info(&spi->dev, "telem0 removed\n");
+    return 0;
 }
 
 static const struct of_device_id telem0_of_match[] = {
