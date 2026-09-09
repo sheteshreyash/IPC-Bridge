@@ -1,48 +1,81 @@
+
 # IPC Bridge Project
 
-A modular embedded systems project that evolves from dummy telemetry on an STM32 Nucleo board into a full embedded-to-Linux IPC pipeline.
+A modular Embedded Linux IPC project demonstrating deterministic telemetry transfer between an STM32H743ZI microcontroller and an NVIDIA Jetson Nano using SPI, GPIO interrupts and a custom Linux kernel driver.
 
-## Current sprint
+---
 
-Sprint 3 — Linux IPC bridge for dummy telemetry
+## Current Sprint
+
+### Sprint 3 — Embedded Linux IPC Infrastructure Using Dummy Telemetry
+
+### Status
+
+#### Sprint 3 Complete
+
+The first end-to-end embedded-to-Linux telemetry pipeline has been successfully validated using deterministic dummy telemetry.
+
+---
 
 ## Hardware
 
 - STM32 NUCLEO-H743ZI
-- Raspberry Pi 4
-- Laptop with Windows 11 + Ubuntu 22.04 dual boot
+- NVIDIA Jetson Nano Developer Kit P3450 4GB
+- MPU-9250 GY-9250 9-Axis Sensor Module — planned for later sensor integration
+- Windows 11 development environment
+- Ubuntu 22.04 LTS development environment
+- STM32CubeIDE
 
-## Current status
+### Jetson Nano Platform
 
-- Sprint 1 UART telemetry completed
-- Sprint 2 FreeRTOS scheduler integration completed
-- Sprint 3 Linux IPC bridge implementation starting
+- Custom Jetson Nano Linux image
+- L4T R32.7.6
+- Ubuntu 18.04.6 LTS
+- Linux 4.9.337-tegra
+- AArch64
 
-## Sprint roadmap
+---
 
-- Sprint 1: Dummy telemetry over UART
-- Sprint 2: FreeRTOS on dummy telemetry
-- Sprint 3: Linux IPC bridge for dummy telemetry
-- Sprint 4: Real sensor bring-up
-- Sprint 5: FreeRTOS on real sensor data
-- Sprint 6: Linux IPC bridge and visualization on real sensor data
+## Current Status
 
-## Repository structure
+### Sprint 1 — Complete
 
-- docs/ — architecture, setup, testing, sprint notes
-- firmware/ — STM32 code
-- kernel/ — Raspberry Pi kernel work
-- user/ — user-space tools and daemons
-- tools/ — helper scripts
-- hardware/ — wiring and BOM notes
-- benchmarks/ — measured outputs and reports
-- scripts/ — helper scripts
+#### Dummy telemetry over UART
 
-## Development approach
+The STM32 generated deterministic telemetry and transmitted it through UART.
 
-Build one sprint at a time.
-Each sprint should be stable and documented before moving on to the next.
+### Sprint 2 — Complete
 
-## License
+#### FreeRTOS integration
 
-MIT
+Telemetry generation was moved into a FreeRTOS task environment with periodic scheduling and RTOS-based task execution.
+
+### Sprint 3 — Complete
+
+#### Embedded Linux IPC infrastructure
+
+The STM32 dummy telemetry now travels through:
+
+```text
+STM32 FreeRTOS
+      ↓
+36-byte telemetry packet
+      ↓
+SPI slave
+      ↓
+DATA_READY GPIO
+      ↓
+Jetson GPIO interrupt
+      ↓
+Linux kernel workqueue
+      ↓
+SPI master transaction
+      ↓
+Packet validation
+      ↓
+kfifo
+      ↓
+/dev/telem0
+      ↓
+User-space telemetry reader
+```

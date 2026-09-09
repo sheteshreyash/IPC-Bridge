@@ -30,6 +30,23 @@ build/
 Module.symvers
 modules.order
 *.cmd
+*.symvers
+
+# Linux kernel build directories / metadata
+kernel/.tmp_versions/
+kernel/.cache/
+kernel/.version
+kernel/.*.o.cmd
+kernel/.*.ko.cmd
+kernel/.*.mod.cmd
+
+# Device Tree build artifacts
+kernel/dts/**/*.dtb
+kernel/dts/**/*.dtbo
+kernel/dts/**/*.dts.tmp
+
+# Jetson deployment artifacts
+*.tegra
 
 # C/C++ / general build output
 cmake-build-*/
@@ -67,11 +84,16 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Raspberry Pi / deployment artifacts
+# Jetson / deployment images
 *.img
 *.backup
-
 
 # Sensitive files
 *.pem
 *.key
+
+# CMake build directories
+user/**/build/
+
+# Generic
+*.tmp

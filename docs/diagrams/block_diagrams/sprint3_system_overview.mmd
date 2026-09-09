@@ -1,0 +1,36 @@
+graph TD
+
+    subgraph STM32["STM32H743ZI (FreeRTOS Producer)"]
+
+        A[Telemetry Task<br/>100 Hz]
+        B[Producer Module]
+        C[Packet Builder]
+        D[SPI1 Slave Peripheral]
+        E[DATA_READY GPIO]
+
+        UART[UART Debug Console]
+        A --> B
+        B --> C
+        C --> D
+        C --> UART
+        C --> E
+    end
+
+    subgraph BUS["Physical Connections"]
+
+        D <-->|SPI MOSI<br/>SPI MISO<br/>SPI SCLK<br/>SPI CS| SPIBUS
+        E -->|Interrupt| IRQBUS
+    end
+
+    subgraph JETSON["Jetson Nano P3450 (Embedded Linux)"]
+
+        IRQBUS --> G[GPIO Interrupt Controller]
+        G --> H[Linux Hard IRQ]
+        H --> I[Kernel Workqueue]
+        SPIBUS --> J[SPI Master Controller]
+
+        I --> J
+        J --> K[(Kernel kfifo)]
+        K --> L["/dev/telem0"]
+        L --> M[telemetry_reader]
+    end

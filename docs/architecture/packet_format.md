@@ -2,7 +2,7 @@
 
 ## Current packet type
 
-Fixed-size telemetry packet for IPC bridge validation
+Fixed-format telemetry packet for IPC bridge validation
 
 ## Fields
 
@@ -21,10 +21,9 @@ SEQ=0,TS_US=0,AX=-1000,AY=-1000,AZ=1000,GX=-250,GY=-250,GZ=-250
 
 ## Notes
 
-- Sprint 3 moves from purely terminal-friendly text output to a structured IPC packet mindset
-- The packet is still based on dummy telemetry
-- The packet must be simple enough to validate through UART and later SPI
-- CRC can be introduced in later sprint refinement if needed
+- Sprint 3 still uses dummy telemetry
+- The packet is structured so it can be fetched over SPI and later extended for CRC and binary framing
+- UART debug output remains available, but the IPC path itself is packet-based
 
 ## Future evolution
 

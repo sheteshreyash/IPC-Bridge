@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant EXTI as Pin 22 (DATA_READY)
+    participant CS as Pin 24 (SPI1_CS0)
+    participant CLK as Pin 23 (SPI1_SCK)
+    participant MISO as Pin 21 (SPI1_MISO)
+
+    Note over EXTI,MISO: Idle State: EXTI=Low, CS=High, CLK=Low
+    EXTI->>EXTI: Drive HIGH (STM32 Signals Ready)
+    Note over CS: Jetson Hard IRQ -> Workqueue Delay
+    CS->>CS: Drive LOW (Jetson Asserts Control)
+    CLK->>CLK: 1 MHz Clock Pulses Generate
+    MISO->>MISO: 36 Bytes Shifted Out
+    CS->>CS: Drive HIGH (Jetson Releases Bus)
+    EXTI->>EXTI: Drive LOW (STM32 Clears Signal)

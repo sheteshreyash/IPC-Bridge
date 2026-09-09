@@ -1,0 +1,28 @@
+sequenceDiagram
+
+participant STM32 as STM32H743ZI
+participant DRDY as DATA_READY GPIO
+participant SPI as SPI Bus
+participant GPIO as Jetson GPIO IRQ
+participant IRQ as Linux Hard IRQ
+participant WQ as Kernel Workqueue
+participant KFIFO as Kernel kfifo
+participant USER as telemetry_reader
+
+loop Every 10 ms
+
+STM32->>STM32: Generate Dummy Telemetry
+STM32->>STM32: Build Binary Packet
+STM32->>SPI: Load SPI TX Buffer
+STM32->>DRDY: DATA_READY HIGH
+DRDY->>GPIO: Rising Edge
+GPIO->>IRQ: Hardware Interrupt
+IRQ->>WQ: schedule_work()
+IRQ-->>GPIO: IRQ Exit
+WQ->>SPI: SPI Master Transaction
+SPI-->>WQ: Receive Packet
+WQ->>KFIFO: Push Packet
+KFIFO-->>USER: poll()/read()
+STM32->>DRDY: DATA_READY LOW
+
+end
