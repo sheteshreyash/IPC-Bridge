@@ -24,11 +24,11 @@ void Packet_Build(TelemetryPacket_t *pkt, uint32_t seq, uint32_t ts_us)
     pkt->seq = seq;
     pkt->ts_us = ts_us;
 
-    pkt->ax = ((seq * 7U) % 2000U) - 1000;
-    pkt->ay = ((seq * 11U) % 2000U) - 1000;
-    pkt->az = ((seq * 13U) % 2000U) - 1000;
+    pkt->ax = (int32_t)((seq * 7U) % 2000U) - 1000;
+    pkt->ay = (int32_t)((seq * 11U) % 2000U) - 1000;
+    pkt->az = (int32_t)((seq * 13U) % 2000U) - 1000;
 
-    pkt->gx = ((seq * 3U) % 500U) - 250;
-    pkt->gy = ((seq * 5U) % 500U) - 250;
-    pkt->gz = ((seq * 9U) % 500U) - 250;
+    pkt->gx = (int32_t)((seq * 3U) % 500U) - 250;
+    pkt->gy = (int32_t)((seq * 5U) % 500U) - 250;
+    pkt->gz = (int32_t)((seq * 9U) % 500U) - 250;
 }

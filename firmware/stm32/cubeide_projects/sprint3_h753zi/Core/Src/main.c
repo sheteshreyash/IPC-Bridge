@@ -69,8 +69,8 @@ const osThreadAttr_t telemetryTask_attributes = {
 void SystemClock_Config(void);
 static void MPU_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_USART3_UART_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_USART3_UART_Init(void);
 void StartLedTask(void *argument);
 void StartTelemetryTask(void *argument);
 
@@ -115,8 +115,8 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART3_UART_Init();
   MX_SPI1_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   IPC_Bridge_Init();
 
@@ -222,7 +222,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV1;
   RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
@@ -406,14 +406,13 @@ void StartTelemetryTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
+      IPC_Bridge_Task();
+	 // Visual TX indicator moved to the RED LED
+	  HAL_GPIO_TogglePin(LD3_RED_GPIO_Port, LD3_RED_Pin);
 
-	      IPC_Bridge_Task();
-		 // Visual TX indicator moved to the RED LED
-		  HAL_GPIO_TogglePin(LD3_RED_GPIO_Port, LD3_RED_Pin);
-
-		 // CRITICAL: This hands control back to the OS for 10ms,
-		// allowing ledTask to run!
-	    osDelay(10);
+	 // CRITICAL: This hands control back to the OS for 10ms,
+	// allowing ledTask to run!
+    osDelay(10);
   }
   /* USER CODE END StartTelemetryTask */
 }

@@ -1,3 +1,4 @@
+
 # IPC Bridge Project
 
 A modular Embedded Linux IPC project demonstrating deterministic telemetry transfer between an STM32H743ZI microcontroller and an NVIDIA Jetson Nano using SPI, GPIO interrupts and a custom Linux kernel driver.
@@ -6,107 +7,75 @@ A modular Embedded Linux IPC project demonstrating deterministic telemetry trans
 
 ## Current Sprint
 
-Sprint 3
+### Sprint 3 — Embedded Linux IPC Infrastructure Using Dummy Telemetry
 
-Embedded Linux IPC Infrastructure using Dummy Telemetry
+### Status
+
+#### Sprint 3 Complete
+
+The first end-to-end embedded-to-Linux telemetry pipeline has been successfully validated using deterministic dummy telemetry.
 
 ---
 
 ## Hardware
 
 - STM32 NUCLEO-H743ZI
-- MPU-9250 (planned for Sprint 5)
-- NVIDIA Jetson Nano P3450 4GB
-- Windows 11
-- Ubuntu 22.04 LTS
+- NVIDIA Jetson Nano Developer Kit P3450 4GB
+- MPU-9250 GY-9250 9-Axis Sensor Module — planned for later sensor integration
+- Windows 11 development environment
+- Ubuntu 22.04 LTS development environment
 - STM32CubeIDE
+
+### Jetson Nano Platform
+
+- Custom Jetson Nano Linux image
+- L4T R32.7.6
+- Ubuntu 18.04.6 LTS
+- Linux 4.9.337-tegra
+- AArch64
 
 ---
 
 ## Current Status
 
-✔ Sprint 1 completed
-UART dummy telemetry
+### Sprint 1 — Complete
 
-✔ Sprint 2 completed
-FreeRTOS integration
+#### Dummy telemetry over UART
 
-🚧 Sprint 3 in progress
-Embedded Linux IPC infrastructure
+The STM32 generated deterministic telemetry and transmitted it through UART.
 
----
+### Sprint 2 — Complete
 
-## Sprint Roadmap
+#### FreeRTOS integration
 
-- Sprint 1
-Dummy telemetry over UART
+Telemetry generation was moved into a FreeRTOS task environment with periodic scheduling and RTOS-based task execution.
 
-- Sprint 2
-FreeRTOS scheduler
+### Sprint 3 — Complete
 
-- Sprint 3
-Embedded Linux IPC infrastructure using dummy telemetry
+#### Embedded Linux IPC infrastructure
 
-- Sprint 4
-Bare metal MPU-9250 driver and SPI integration with RTOS
+The STM32 dummy telemetry now travels through:
 
-- Sprint 5
-Replace dummy telemetry with RTOS with MPU-9250 sensor data
-
-- Sprint 6
-Visualization, benchmarking and optimization
-
----
-
-## Repository Structure
-
-- docs/
-Project documentation
-
-- firmware/
-STM32 firmware
-
-- kernel/
-Linux kernel module
-
-- shared/
-Shared communication protocol
-
-- user/
-User-space applications
-
-- scripts/
-Build scripts
-
-hardware/
-Hardware documentation
-
-benchmarks/
-Performance measurements
-
-.github/
-CI workflows
-
----
-
-## Project Goals
-
-- Modular firmware architecture
-- Embedded Linux kernel programming
-- SPI-based IPC
-- Interrupt-driven communication
-- Shared firmware/Linux ABI
-- Production-style project organization
-
----
-
-## Telemetry Status
-
-Current firmware still transmits deterministic dummy telemetry.
-This allows the entire Linux communication pipeline to be validated before introducing real IMU data.
-
----
-
-## License
-
-MIT
+```text
+STM32 FreeRTOS
+      ↓
+36-byte telemetry packet
+      ↓
+SPI slave
+      ↓
+DATA_READY GPIO
+      ↓
+Jetson GPIO interrupt
+      ↓
+Linux kernel workqueue
+      ↓
+SPI master transaction
+      ↓
+Packet validation
+      ↓
+kfifo
+      ↓
+/dev/telem0
+      ↓
+User-space telemetry reader
+```

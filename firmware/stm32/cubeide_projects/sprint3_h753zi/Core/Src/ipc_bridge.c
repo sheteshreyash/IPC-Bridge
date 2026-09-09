@@ -25,8 +25,15 @@ void IPC_Bridge_Task(void)
 
     Producer_Next(&pkt);
 
-    Transport_DebugSend(&pkt);
+    /*
+     * Keep UART alive as the independent STM32 debug path.
+     */
+    (void)Transport_DebugSend(&pkt);
 
-    Transport_SetReady();
-    Transport_ClearReady();
+    /*
+     * Prepare and advertise the packet to the Jetson.
+     *
+     * The SPI transfer itself occurs asynchronously.
+     */
+    (void)Transport_SendPacket(&pkt);
 }
