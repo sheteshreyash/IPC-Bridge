@@ -1,0 +1,26 @@
+name: STM32 Toolchain Validation
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+  pull_request:
+
+jobs:
+  toolchain:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install ARM GCC Toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
+
+      - name: Verify Toolchain Installation
+        run: |
+          arm-none-eabi-gcc --version
+          arm-none-eabi-size --version
