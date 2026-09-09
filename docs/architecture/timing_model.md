@@ -1,77 +1,55 @@
-# Sprint 3 Timing Model
+# Sprint 4 Timing Model
 
 ## Purpose
 
-This document describes the timing behavior of the Embedded Linux IPC pipeline implemented during Sprint 3.
+This document defines the timing behavior after replacing the Sprint 3 dummy telemetry source with real MPU-9250 measurements.
 
-The objective is deterministic packet generation rather than minimum latency.
+The first objective is stable sensor acquisition and transport rather than minimum possible latency.
 
 ---
 
 ## Timing Flow
 
-1. FreeRTOS scheduler executes Telemetry Task every 10 ms.
-2. Producer generates deterministic dummy telemetry.
-3. Packet Builder constructs a binary telemetry packet.
-4. Transport prepares the SPI transmit buffer.
-5. STM32 asserts DATA_READY.
-6. Jetson GPIO interrupt occurs.
-7. Hard IRQ schedules Workqueue.
-8. Workqueue performs SPI transaction.
-9. Packet is validated.
-10. Packet enters kfifo.
-11. Userspace application wakes via poll().
-12. Packet is logged.
+1. FreeRTOS schedules the sensor acquisition task.
+2. The STM32 reads the configured MPU-9250 sensor registers.
+3. The sensor sample is stored.
+4. The telemetry producer creates a packet from the latest valid sample.
+5. The packet is prepared for SPI transmission.
+6. DATA_READY is asserted.
+7. Jetson GPIO interrupt occurs.
+8. Linux hard IRQ schedules workqueue processing.
+9. Workqueue performs the SPI transaction.
+10. Packet is validated.
+11. Packet enters kfifo.
+12. Userspace is awakened.
+13. Userspace reads and logs the sensor values.
 
 ---
 
-## Current Timing Characteristics
+## Initial Target
 
-Telemetry Rate
-100 Hz
+The exact sensor acquisition rate must be determined by the final MPU-9250 configuration.
 
-Packet Period
-10 ms
-
-Transport
-SPI
-
-Synchronization
-GPIO Interrupt
-
-Scheduling
-FreeRTOS
-
-Kernel
-Interrupt-driven
-
-Userspace
-poll()/read()
+The Sprint 3 100 Hz IPC cadence may be retained initially so that the comparison against the dummy-data system remains straightforward.
 
 ---
 
-## Sprint 3 Goals
+## Timing Components
 
-Validate
-
-- periodic telemetry generation
-- deterministic packet timing
-- interrupt latency
-- SPI synchronization
-- kernel buffering
-- userspace delivery
-
----
-
-## Future Timing Improvements
-
-Sprint 5
-Replace dummy telemetry with MPU-9250 acquisition.
-
-Sprint 6
-
-- DMA optimization
-- latency profiling
-- throughput benchmarking
-- interrupt optimization
-- visualization latency
+```text
+Sensor acquisition
+        +
+FreeRTOS scheduling
+        +
+Packet construction
+        +
+DATA_READY assertion
+        +
+GPIO IRQ latency
+        +
+SPI transfer
+        +
+Kernel buffering
+        +
+Userspace wakeup
+```

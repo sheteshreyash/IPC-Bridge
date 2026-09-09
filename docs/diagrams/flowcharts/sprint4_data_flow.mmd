@@ -1,0 +1,33 @@
+flowchart TD
+
+    A([STM32 Boot]) --> B[Initialize HAL]
+    B --> C[Initialize MPU-9250]
+    C --> D{WHO_AM_I Valid?}
+
+    D -- No --> E[Report Sensor Error via UART]
+    E --> C
+
+    D -- Yes --> F[Configure Accelerometer]
+    F --> G[Configure Gyroscope]
+    G --> H[Start FreeRTOS]
+
+    H --> I[Acquire Sensor Sample]
+    I --> J[Store Latest Sensor Values]
+    J --> K[Build telem0_packet_t]
+    K --> L[Prepare SPI TX Buffer]
+    L --> M[Assert DATA_READY]
+
+    M --> N[Jetson GPIO Rising Edge]
+    N --> O[Linux Hard IRQ]
+    O --> P[Schedule Workqueue]
+    P --> Q[SPI Master Transaction]
+    Q --> R{MAGIC Valid?}
+
+    R -- No --> S[Drop Packet and Log Error]
+    R -- Yes --> T[kfifo_in]
+    T --> U[Wake Userspace]
+    U --> V[telemetry_reader]
+    V --> W[Display Real Sensor Data]
+
+    W --> X{Next Sample}
+    X --> I

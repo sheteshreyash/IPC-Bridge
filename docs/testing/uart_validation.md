@@ -2,15 +2,15 @@
 
 ## Objective
 
-Verifying STM32 firmware is generating and transmitting dummy telemetry correctly.
+Verify that the STM32 firmware generates and transmits dummy telemetry correctly.
 
-## Test setup
+## Test Setup
 
-- NUCLEO-H753ZI
+- NUCLEO-H743ZI
 - USB cable to laptop
 - Serial terminal on Ubuntu or Windows
 
-## Test procedure
+## Test Procedure
 
 1. Flash firmware to STM32
 2. Open serial terminal at 115200 baud
@@ -20,11 +20,11 @@ Verifying STM32 firmware is generating and transmitting dummy telemetry correctl
 6. Confirm no garbage characters
 7. Confirm stable transmission for several minutes
 
-## Expected result
+## Expected Result
 
 A clean stream of telemetry messages appears in the terminal.
 
-## Pass criteria
+## Pass Criteria
 
 - UART works
 - board boots correctly
@@ -32,10 +32,17 @@ A clean stream of telemetry messages appears in the terminal.
 - no crash or freeze
 - output frequency is stable enough for Sprint 1
 
-## Failure cases
+## Failure Cases
 
 - wrong baud rate
 - wrong UART port
 - USB driver issue
-- code crash
-- bad clock config
+- firmware crash
+- incorrect clock configuration
+- output corruption
+
+## Later Sprint Usage
+
+UART remains a diagnostic interface.
+
+During Sprint 4 it is used to inspect MPU-9250 sensor values before those values are sent through the Jetson IPC pipeline.

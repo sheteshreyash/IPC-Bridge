@@ -34,3 +34,9 @@ A clean stream of telemetry lines produced under FreeRTOS task control.
 - incorrect FreeRTOS config
 - UART not initialized
 - output corruption
+
+## Sprint 4 Usage
+
+This test remains useful as an STM32-side diagnostic.
+
+During Sprint 4, UART is used to validate real MPU-9250 measurements before those measurements are transmitted through the Jetson IPC bridge.

@@ -2,100 +2,76 @@
 
 ## Purpose
 
-Verify that the SPI link between the STM32H743ZI and NVIDIA Jetson Nano is functioning before testing the custom kernel driver.
+Verify the STM32H743ZI-to-Jetson Nano SPI communication path used by the IPC bridge.
+
+## Objective
+
+Validate:
+
+- SPI clock
+- chip select
+- MOSI
+- MISO
+- packet transfer
+
+## Hardware
+
+### Master
+
+- NVIDIA Jetson Nano
+
+### Slave
+
+- STM32H743ZI
+
+## Connections
+
+| Jetson Pin | Function | STM32 |
+|---|---|---|
+| 19 | MOSI | PA7 / SPI1_MOSI |
+| 21 | MISO | PA6 / SPI1_MISO |
+| 23 | SCLK | PA5 / SPI1_SCK |
+| 24 | CS0 | PA4 / SPI1_NSS |
+| 31 | DATA_READY | PB1 |
+| 20 | GND | GND |
+
+## Validation Strategy
+
+### Stage 1
+
+Validate the Jetson SPI controller using the physical loopback test documented in:
+
+```text# Sprint 3 - SPI Hardware Validation
+
+## Purpose
+
+Verify the Jetson SPI interface and the STM32-to-Jetson SPI transport used by the IPC bridge.
 
 ---
 
 ## Objective
 
-Validate
+Validate:
 
 - SPI clock
 - Chip Select
 - MOSI
 - MISO
+- packet transfer
 
-using the Linux spidev interface.
-
----
-
-## Hardware
-
-Master
-
-- NVIDIA Jetson Nano
-
-Slave
-
-- STM32H743ZI
+using an incremental test strategy.
 
 ---
 
-## Prerequisites
+## Stage 1 - Jetson SPI Loopback
 
-- SPI enabled
-- Wiring verified
-- STM32 firmware running
-- DATA_READY active
+Before connecting the STM32, validate the Jetson SPI hardware using `/dev/spidev0.0`.
 
----
+See:
 
-## Validation
-
-Check available devices
-
-```bash
-ls /dev/spidev*
+```text
+docs/testing/jetson_spi_loopback.md
 ```
 
-Expected
-
-```bash
-/dev/spidev0.0
+docs/testing/jetson_spi_loopback.md
 ```
-
-(or whichever bus Jetson exposes)
-
----
-
-## Transfer dummy clocks
-
-```bash
-head -c 36 /dev/zero \
-| spi-pipe -d /dev/spidev0.0 -s 1000000 \
-| hexdump -C
-```
-
-Expected Result
-
-```bash
-Binary packet received from STM32.
-Packet length should match the protocol definition.
-```
-
----
-
-## Pass Criteria
-
-- SPI device detected
-- Successful transfer
-- Correct packet length
-- No timeout
-- No CRC / magic failures
-
----
-
-## Failure Cases
-
-- Wrong SPI mode
-- Wrong CS
-- Incorrect wiring
-- STM32 not responding
-- Driver configuration error
-
----
-
-## Notes
-
-- This validation confirms only the physical SPI bus.
-- The custom kernel driver is tested separately.

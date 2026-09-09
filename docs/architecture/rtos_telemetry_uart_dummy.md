@@ -1,8 +1,9 @@
-# Sprint 3 RTOS Telemetry Source
+# Sprint 4 RTOS Telemetry Source
 
 ## Purpose
 
 This document defines the RTOS-based telemetry generation path that feeds the IPC bridge in Sprint 3.
+WE have replaced the Sprint 3 dummy telemetry source with real measurements from the MPU-9250 sensor.
 
 ## Current role of telemetry task
 
@@ -19,10 +20,9 @@ The telemetry task remains the producer of dummy telemetry data, but the output 
 
 ## Why this exists
 
-Sprint 3 still uses dummy data so that the Linux IPC stack can be validated before real sensor integration.
+Sprint 4 introduces real sensor data while maintaining the existing IPC infrastructure.
 
 ## Relationship to later sprints
 
-- Sprint 4: real sensor replaces dummy generator
-- Sprint 5: RTOS and real sensor timing are tuned
-- Sprint 6: final bridge and visualization pipeline is stabilized
+- Sprint 5: real sensor data is fully integrated into the Linux transport path
+- Sprint 6: the Linux transport path is redesigned to support multiple telemetry sources alongside the visualization telemetry source

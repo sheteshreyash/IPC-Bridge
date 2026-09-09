@@ -4,23 +4,25 @@
 
 Verify the Jetson Nano 40-pin SPI interface independently before connecting the STM32.
 
+This isolates Jetson SPI controller and pinmux functionality from the STM32 firmware.
+
 ## Platform
 
-- NVIDIA Jetson Nano Developer Kit P3450
-- L4T R32.7.6
+- NVIDIA Jetson Nano Developer Kit P3450 4GB
+- L4T R32.7.1
 - Linux 4.9.337-tegra
-- aarch64
+- AArch64
 
 ## SPI Configuration
 
 Jetson-IO:
 
-- spi1
+- `spi1`
 - Physical pins: 19, 21, 23, 24, 26
 
 Linux:
 
-- Controller: `7000d400.spi`
+- Tegra controller: `7000d400.spi`
 - Linux SPI bus: `spi0`
 - Test device: `/dev/spidev0.0`
 - Chip select: CS0
@@ -28,7 +30,7 @@ Linux:
 ## Wiring
 
 | Jetson Pin | Function |
-| --- | --- |
+|---|---|
 | 19 | MOSI |
 | 21 | MISO |
 

@@ -1,104 +1,91 @@
-# Sprint 3 System Overview
+# Sprint 4 System Overview
 
 ## Goal
 
-Sprint 3 transforms the project from a standalone embedded firmware application into a heterogeneous Embedded Linux IPC system.
+Sprint 4 introduces the MPU-9250 as the real telemetry source while preserving the Linux IPC architecture validated during Sprint 3.
 
-The STM32H743ZI acts as a deterministic real-time telemetry producer, while the NVIDIA Jetson Nano acts as the Embedded Linux consumer.
+The STM32H743ZI remains the real-time sensor and telemetry controller.
 
-Real IMU measurements are intentionally postponed until Sprint 5. Sprint 3 focuses entirely on validating the communication infrastructure using deterministic dummy telemetry.
+The NVIDIA Jetson Nano remains the Linux-side IPC consumer.
 
 ---
 
 ## Current Scope
 
-STM32 Side
+### STM32 Side
 
-- FreeRTOS scheduler
-- Producer module
-- Packet builder
-- SPI slave interface
-- DATA_READY GPIO signaling
-- UART debug output
+- FreeRTOS
+- MPU-9250 initialization
+- sensor identity validation
+- accelerometer acquisition
+- gyroscope acquisition
+- telemetry packet generation
+- SPI slave IPC
+- DATA_READY signaling
+- UART diagnostics
 
-Jetson Nano Side
+### Jetson Nano Side
 
-- Linux SPI master
+- SPI master
 - GPIO interrupt handling
 - Linux kernel driver
-- Workqueue processing
+- workqueue processing
 - kfifo buffering
-- Character device (/dev/telem0)
-- User-space telemetry reader
+- `/dev/telem0`
+- userspace telemetry reader
 
 ---
 
-## Current Hardware
+## Hardware
 
 - STM32 NUCLEO-H743ZI
-- NVIDIA Jetson Nano P3450 (4GB)
-- MPU-9250 IMU module (reserved for Sprint 5)
-- USB Type-A to Micro-USB cable
-- Female-to-female jumper wires
-- Windows 11
-- Ubuntu 22.04 LTS
-- STM32CubeIDE
-- Visual Studio Code
-- Linux kernel build environment
+- NVIDIA Jetson Nano P3450 4GB
+- MPU-9250 GY-9250 module
+- jumper wires
+- STM32 ST-Link
+- development workstation
 
 ---
 
 ## High-Level Architecture
 
-STM32H743ZI
-↓
-FreeRTOS
-↓
-Telemetry Producer
-↓
-Packet Builder
-↓
-SPI Slave + DATA_READY GPIO
-↓
-NVIDIA Jetson Nano
-↓
-Linux SPI Driver
-↓
-kfifo
-↓
-/dev/telem0
-↓
-User-space Telemetry Reader
-
----
-
-## Sprint 3 Objectives
-
-Sprint 3 validates
-
-- Embedded-to-Linux IPC
-- SPI communication
-- GPIO interrupt synchronization
-- Linux kernel driver framework
-- Character device interface
-- User-space communication
-- Deterministic packet transport
-
----
-
-## Not Included
-
-- MPU-9250 acquisition
-- Sensor fusion
-- DMA optimization
-- Performance benchmarking
-- Live visualization
-- Production latency optimization
-
----
-
-## Expected Outcome
-
-A fully functional communication infrastructure capable of transferring deterministic telemetry packets from the STM32 to the Jetson Nano through an interrupt-driven Linux kernel architecture.
-
-Only after this infrastructure is validated will dummy telemetry be replaced with real MPU-9250 measurements.
+```text
+               MPU-9250
+                   |
+             Sensor Interface
+                   |
+                   v
+           STM32H743ZI
+                   |
+             FreeRTOS
+                   |
+            Sensor Task
+                   |
+                   v
+           Telemetry Producer
+                   |
+                   v
+            Packet Builder
+                   |
+             SPI1 Slave
+                   |
+          DATA_READY GPIO
+                   |
+===================+====================
+                   |
+              Jetson Nano
+                   |
+             GPIO IRQ
+                   |
+           Linux Workqueue
+                   |
+              SPI Master
+                   |
+              Packet Check
+                   |
+                 kfifo
+                   |
+             /dev/telem0
+                   |
+           telemetry_reader
+```
