@@ -1,89 +1,111 @@
-# Sprint 3 IPC Design
+# Sprint 4 IPC Design
 
 ## Purpose
 
-This document defines the communication architecture between the STM32H743ZI firmware and the NVIDIA Jetson Nano Linux system.
+This document defines the IPC architecture used after replacing Sprint 3 dummy telemetry with real MPU-9250 measurements.
 
-Sprint 3 focuses on validating the communication infrastructure using deterministic dummy telemetry.
+The Linux-side IPC design established in Sprint 3 remains unchanged.
+
+Sprint 4 changes the telemetry source rather than redesigning the transport.
 
 ---
 
 ## IPC Medium
 
-Primary transport
+### Primary transport
 
 - SPI
-Synchronization
+
+### Synchronization
 
 - DATA_READY GPIO interrupt
-Debug Interface
 
-- UART (STM32 only)
+### Debug Interface
+
+- UART on STM32
 
 ---
 
 ## System Roles
 
-STM32H743ZI
+### STM32H743ZI
 
-- Real-time telemetry producer
-- SPI Slave
-- FreeRTOS scheduler
-- Packet generator
+The STM32 is responsible for:
 
+- MPU-9250 communication
+- sensor initialization
+- sensor sampling
+- FreeRTOS scheduling
+- telemetry packet creation
+- SPI slave transmission
+- DATA_READY signaling
+- optional UART diagnostics
+
+### MPU-9250
+
+The MPU-9250 provides:
+
+- 3-axis accelerometer
+- 3-axis gyroscope
+- 3-axis magnetometer
+
+The initial Sprint 4 telemetry ABI uses the accelerometer and gyroscope fields already present in `telem0_packet_t`.
+
+### Jetson Nano
+
+The Jetson remains responsible for:
+
+- SPI master operation
+- GPIO interrupt reception
+- Linux kernel driver execution
+- packet buffering
+- userspace access
+
+### Linux Kernel Driver
+
+The existing `telem0_driver`:
+
+- receives DATA_READY interrupts
+- schedules workqueue processing
+- performs SPI transactions
+- validates packet MAGIC
+- buffers packets in kfifo
+- exposes `/dev/telem0`
+
+### User-space Application
+
+The telemetry reader:
+
+- opens `/dev/telem0`
+- waits using `poll()`
+- reads telemetry packets
+- validates the packet ABI
+- prints and logs real sensor values
+
+---
+
+## Sensor Interface
+
+The MPU-9250 interface is treated as a separate subsystem from the STM32-to-Jetson SPI bridge.
+
+The sensor bus and exact STM32 GPIO assignments must be kept consistent with the final STM32CubeIDE project configuration.
+
+The SPI1 peripheral used for the Jetson bridge must remain dedicated to the IPC path.
+
+---
+
+## Why the separation matters
+
+Two independent communication paths are intentionally maintained:
+
+```text
+MPU-9250
+    |
+    | Sensor bus
+    v
+STM32
+    |
+    | SPI1 IPC
+    v
 Jetson Nano
-
-- SPI Master
-- Embedded Linux Host
-
-Linux Kernel Driver
-
-- Handles GPIO interrupts
-- Schedules workqueue
-- Reads SPI packets
-- Buffers packets using kfifo
-- Exposes /dev/telem0
-
-User-space Application
-
-- Reads packets
-- Decodes telemetry
-- Logs packets
-- Future visualization interface
-
----
-
-## Why SPI?
-
-SPI was selected because it provides
-
-- deterministic transfers
-- full duplex communication
-- low software overhead
-- excellent Linux kernel support
-- high throughput
-- simple hardware implementation
-
----
-
-## Why DATA_READY?
-
-An SPI slave cannot initiate communication.
-The STM32 therefore asserts DATA_READY whenever a complete telemetry packet is available.
-The Jetson Nano receives the GPIO interrupt and immediately schedules an SPI transaction.
-
----
-
-## Future Expansion
-
-- Sprint 5
-Dummy telemetry
-↓
-MPU-9250 sensor measurements
-
-- Sprint 6
-User-space visualization
-↓
-Real-time plotting
-↓
-Performance optimization
+```

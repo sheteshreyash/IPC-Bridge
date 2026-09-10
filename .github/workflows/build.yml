@@ -1,0 +1,54 @@
+name: Build and Validate
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build container
+        run: docker build -f docker/Dockerfile -t ipc-bridge-ci .
+
+      - name: Build userspace
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            ipc-bridge-ci \
+            bash -c '
+              cd /workspace/user/telemetry_reader &&
+              rm -rf build &&
+              mkdir -p build &&
+              cd build &&
+              cmake .. &&
+              make -j2
+            '
+
+      - name: Validate Device Tree
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            ipc-bridge-ci \
+            bash -c '
+              dtc -@ -I dts -O dtb \
+                -o /tmp/telem0_jetson_overlay.dtbo \
+                /workspace/kernel/dts/jetson/telem0_jetson_overlay.dts
+            '
+
+      - name: Static analysis
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            ipc-bridge-ci \
+            cppcheck \
+              --enable=warning,style,performance \
+              --error-exitcode=1 \
+              /workspace/user/telemetry_reader/main.cpp

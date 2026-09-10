@@ -1,0 +1,37 @@
+sequenceDiagram
+
+    title Sprint 4 Sensor-to-Userspace Timing
+
+    participant IMU as MPU-9250
+    participant STM as STM32
+    participant DRDY as DATA_READY
+    participant IRQ as Jetson IRQ
+    participant WQ as Workqueue
+    participant SPI as SPI Master
+    participant USER as Userspace
+
+    Note over IMU,STM: Sensor sample becomes available
+
+    IMU->>STM: Sensor data ready
+    STM->>IMU: Read sensor registers
+    IMU-->>STM: Accelerometer + Gyroscope data
+
+    Note over STM: Packet construction
+
+    STM->>DRDY: DATA_READY HIGH
+
+    DRDY->>IRQ: Rising edge
+    IRQ->>WQ: schedule_work()
+    WQ->>SPI: Begin SPI transfer
+
+    Note over SPI,STM: 36-byte packet transfer
+
+    SPI->>STM: Clock packet
+    STM-->>SPI: Shift telemetry bytes
+
+    SPI-->>WQ: Transfer complete
+
+    WQ->>USER: Packet becomes available
+    USER->>USER: Decode and log
+
+    Note over IMU,USER: Measure actual delays during Sprint 4 testing

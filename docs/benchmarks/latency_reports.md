@@ -1,51 +1,68 @@
-# Sprint 3 Latency Reports
+# Latency Reports
 
 ## Purpose
 
-This file will store latency measurements and summary notes for the dummy-data IPC bridge.
+This file stores timing and performance measurements for the IPC Bridge.
 
-## Metrics to capture
+Sprint 3 established the baseline using deterministic dummy telemetry.
 
-- STM32 packet generation interval
-- DATA_READY to Pi interrupt latency
-- SPI transaction completion time
-- kernel driver processing time
-- user-space read latency
-- end-to-end latency from packet ready to user-space availability
+Sprint 4 introduces real MPU-9250 data.
 
-## Report format
+---
 
-For each run, capture:
+## Metrics
 
-- date and time
-- firmware version or git commit
-- kernel driver version or git commit
+Capture:
+
+- sensor acquisition interval
+- telemetry packet generation interval
+- DATA_READY assertion timing
+- DATA_READY to Jetson IRQ latency
+- IRQ to workqueue scheduling latency
+- SPI transaction duration
+- kernel packet processing time
+- userspace wakeup latency
+- end-to-end packet delivery latency
+- packet loss
+- sequence gaps
+- jitter
+
+---
+
+## Sprint 3 Baseline
+
+Record:
+
+- dummy telemetry rate
 - packet rate
-- load conditions
-- median latency
-- min latency
-- max latency
-- jitter / variation
-- packet loss count
+- packet period
+- sequence continuity
+- timestamp delta
+- FIFO behavior
 
-## Example sections
+---
 
-### Run 1
+## Sprint 4 Sensor Baseline
 
-- idle system
-- no extra CPU load
-- dummy telemetry only
+Record:
 
-### Run 2
+- MPU-9250 configured sample rate
+- actual sensor acquisition interval
+- telemetry packet rate
+- packet loss
+- sequence gaps
+- timestamp variation
+- CPU load
+- memory usage
 
-- CPU stress on Pi
-- dummy telemetry only
+---
 
-### Run 3
+## Measurement Run Format
 
-- longer run
-- buffer and loss analysis
+### Run ID
 
-## Notes
+Example:
 
-Keep raw logs in a separate folder and summarize only the important conclusions here.
+```text
+S4-RUN-01
+```

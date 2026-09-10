@@ -1,37 +1,25 @@
-# Sprint 3 Packet Format
+# Sprint 4 Packet Format
 
-## Current packet type
+## Current Packet Type
 
-Fixed-format telemetry packet for IPC bridge validation
+Sprint 4 continues to use the fixed-format telemetry packet established during Sprint 3.
 
-## Fields
+The packet ABI is intentionally preserved while the data source changes from dummy telemetry to real MPU-9250 measurements.
 
-- SEQ
-- TS_US
-- AX
-- AY
-- AZ
-- GX
-- GY
-- GZ
+---
 
-## Example packet
+## Current Structure
 
-SEQ=0,TS_US=0,AX=-1000,AY=-1000,AZ=1000,GX=-250,GY=-250,GZ=-250
+The shared packet contains:
 
-## Notes
-
-- Sprint 3 still uses dummy telemetry
-- The packet is structured so it can be fetched over SPI and later extended for CRC and binary framing
-- UART debug output remains available, but the IPC path itself is packet-based
-
-## Future evolution
-
-Later sprints may convert this into:
-
-- fixed-size binary packet
-- CRC-protected payload
-- sequence gap detection
-- timestamp synchronization fields
-- Linux-readable IPC frame
-- sensor-specific metadata
+```text
+magic
+seq
+ts_us
+ax
+ay
+az
+gx
+gy
+gz
+```

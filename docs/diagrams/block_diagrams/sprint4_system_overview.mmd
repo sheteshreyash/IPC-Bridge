@@ -1,0 +1,56 @@
+graph TD
+
+    subgraph SENSOR["MPU-9250"]
+        S1[Accelerometer]
+        S2[Gyroscope]
+        S3[Magnetometer]
+    end
+
+    subgraph STM32["STM32H743ZI"]
+        A[Sensor Driver]
+        B[FreeRTOS Sensor Task]
+        C[Telemetry Producer]
+        D[Packet Builder]
+        E[SPI1 Slave]
+        F[DATA_READY GPIO]
+        G[UART Debug]
+    end
+
+    subgraph LINK["STM32 ↔ Jetson Physical Link"]
+        H[SPI MOSI/MISO/SCLK/CS]
+        I[DATA_READY]
+        J[GND]
+    end
+
+    subgraph JETSON["Jetson Nano"]
+        K[GPIO IRQ]
+        L[telem0_driver.ko]
+        M[Workqueue]
+        N[SPI Master]
+        O[kfifo]
+        P[/dev/telem0\]
+        Q[telemetry_reader]
+    end
+
+    S1 --> A
+    S2 --> A
+    S3 --> A
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    D --> F
+    D --> G
+
+    E <--> H
+    F --> I
+
+    I --> K
+    K --> L
+    L --> M
+    M --> N
+    H <--> N
+    N --> O
+    O --> P
+    P --> Q

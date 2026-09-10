@@ -1,61 +1,54 @@
-# Sprint 3 Data Flow
+# Sprint 4 Data Flow
 
 ## Data Flow Summary
 
-Sprint 3 establishes the complete embedded-to-Linux communication pipeline using deterministic dummy telemetry generated on the STM32H743ZI running FreeRTOS.
+Sprint 4 replaces the deterministic dummy telemetry source used in Sprint 3 with real measurements obtained from the MPU-9250 sensor.
 
-Instead of real IMU measurements, mathematically generated telemetry packets are transferred over SPI to the NVIDIA Jetson Nano, validating the entire communication stack before integrating physical sensors in later sprints.
+The existing STM32-to-Jetson IPC architecture remains unchanged wherever possible.
+
+The primary objective is to introduce real sensor acquisition without simultaneously redesigning the Linux transport path.
 
 ---
 
 ## System Data Flow
 
 1. STM32H743ZI boots.
-2. HAL initializes clocks, GPIO, UART, SPI and FreeRTOS.
-3. FreeRTOS starts the telemetry task.
-4. Producer module generates deterministic dummy telemetry.
-5. Packet module packs telemetry into a fixed binary packet.
-6. Transport module prepares the SPI transmit buffer.
-7. STM32 asserts the DATA_READY GPIO line.
-8. NVIDIA Jetson Nano detects the GPIO interrupt.
-9. Linux kernel driver schedules bottom-half work.
-10. Workqueue performs the SPI transaction.
-11. Received packet is validated.
-12. Packet is pushed into a kernel kfifo.
-13. User-space application reads from /dev/telem0.
-14. Packet is decoded, logged and prepared for visualization.
+2. STM32 HAL initializes clocks, GPIO, UART, sensor bus, SPI and FreeRTOS.
+3. MPU-9250 is initialized.
+4. STM32 verifies the sensor identity using the WHO_AM_I register.
+5. Sensor configuration is applied.
+6. FreeRTOS sensor task periodically reads sensor registers.
+7. Raw accelerometer and gyroscope measurements are captured.
+8. Sensor values are stored in the STM32 sensor data structure.
+9. Telemetry producer consumes the latest valid sensor sample.
+10. Packet builder places the real sensor values into `telem0_packet_t`.
+11. Transport prepares the SPI transmit buffer.
+12. STM32 asserts the DATA_READY GPIO line.
+13. Jetson Nano detects the GPIO interrupt.
+14. Linux kernel driver schedules deferred work.
+15. Kernel workqueue performs the SPI transaction.
+16. Received packet is validated using the packet MAGIC value.
+17. Valid packet is inserted into the kernel kfifo.
+18. `/dev/telem0` becomes readable.
+19. User-space telemetry reader reads and decodes the packet.
+20. Real accelerometer and gyroscope values are printed and logged.
 
 ---
 
-## Packet Example
+## Sensor Path
 
-SEQ=12
-TS_US=123456
-AX=-345
-AY=111
-AZ=1023
-GX=10
-GY=11
-GZ=-3
-
----
-
-## Packet Characteristics
-
-- Fixed packet size
-- Binary protocol
-- Shared ABI between firmware and Linux
-- Sequence-numbered
-- Timestamped
-- Deterministic dummy telemetry
-- Machine readable
-- Low latency
-- Future compatible with MPU-9250 sensor data
-
----
-
-## Sprint 3 Objective
-
-Sprint 3 validates the complete communication path without introducing sensor-side uncertainty.
-
-Only after the Linux SPI bridge is proven stable will the dummy telemetry generator be replaced by MPU-9250 measurements in Sprint 5.
+```text
+MPU-9250
+    |
+    v
+STM32 Sensor Driver
+    |
+    v
+Raw Sensor Sample
+    |
+    v
+FreeRTOS Sensor Task
+    |
+    v
+Telemetry Producer
+```

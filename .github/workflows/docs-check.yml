@@ -17,3 +17,5 @@ jobs:
           test -f README.md
           test -f docs/sprint_notes/sprint1.md
           test -f docs/sprint_notes/sprint2.md
+          test -f docs/sprint_notes/sprint3.md
+          test -f docs/sprint_notes/sprint4.md

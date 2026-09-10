@@ -16,7 +16,7 @@ It can be used for:
 - Git for Windows
 - STM32CubeIDE
 - STM32CubeProgrammer
-- PuTTY or Tera Term
+- PuTTY or H-Term
 - VS Code if needed
 
 ## Notes

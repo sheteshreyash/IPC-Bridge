@@ -1,0 +1,37 @@
+sequenceDiagram
+
+    participant IMU as MPU-9250
+    participant STM32 as STM32H743ZI
+    participant RTOS as FreeRTOS
+    participant DRDY as DATA_READY
+    participant IRQ as Jetson GPIO IRQ
+    participant WQ as Linux Workqueue
+    participant SPI as Jetson SPI Master
+    participant FIFO as kfifo
+    participant USER as telemetry_reader
+
+    RTOS->>STM32: Schedule sensor task
+    STM32->>IMU: Read accelerometer / gyroscope
+    IMU-->>STM32: Return sensor registers
+
+    STM32->>STM32: Store sensor sample
+    STM32->>STM32: Build telemetry packet
+    STM32->>STM32: Prepare SPI TX buffer
+    STM32->>DRDY: Assert DATA_READY
+
+    DRDY->>IRQ: Rising edge
+    IRQ->>WQ: schedule_work()
+    IRQ-->>DRDY: Return immediately
+
+    WQ->>SPI: Start SPI transaction
+    SPI->>STM32: Generate SPI clock
+    STM32-->>SPI: Shift 36-byte packet
+    SPI-->>WQ: Transfer complete
+
+    WQ->>WQ: Validate MAGIC
+    WQ->>FIFO: Push packet
+    FIFO->>USER: Wake poll()/read()
+    USER->>FIFO: Read packet
+    USER->>USER: Decode real sensor values
+
+    Note over IMU,USER: Repeat for each sensor sample
